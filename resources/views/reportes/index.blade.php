@@ -20,57 +20,77 @@
 
 @push('styles')
 <style>
-    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.2rem; margin-bottom: 1.8rem; }
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.2rem; margin-bottom: 2rem; }
     .stat-card {
-        border-radius: 14px; padding: 1.2rem 1.4rem;
-        box-shadow: 0 2px 12px rgba(0,0,0,.06); display: flex; align-items: center; gap: 1rem;
+        border-radius: 16px; padding: 1.3rem 1.5rem; background: #fff;
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1rem;
+        transition: transform .2s, box-shadow .2s;
     }
-    .stat-card.green  { background: #d1fae5; }
-    .stat-card.blue   { background: #dbeafe; }
-    .stat-card.teal   { background: #ccfbf1; }
-    .stat-card.orange { background: #ffedd5; }
-    .stat-card .sc-icon { font-size: 1.8rem; }
-    .stat-card .sc-num  { font-size: 1.6rem; font-weight: 900; color: #111827; }
-    .stat-card .sc-label { font-size: .85rem; font-weight: 600; color: #374151; }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .stat-card.green  { border-left: 4px solid #106f4e; }
+    .stat-card.green .sc-icon { background: #ecfdf5; border: 1px solid #d1fae5; }
+    .stat-card.blue   { border-left: 4px solid #2563eb; }
+    .stat-card.blue .sc-icon { background: #eff6ff; border: 1px solid #dbeafe; }
+    .stat-card.teal   { border-left: 4px solid #0d9488; }
+    .stat-card.teal .sc-icon { background: #f0fdfa; border: 1px solid #ccfbf1; }
+    .stat-card.orange { border-left: 4px solid #d97706; }
+    .stat-card.orange .sc-icon { background: #fffbeb; border: 1px solid #fef3c7; }
 
-    .reports-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; }
-    .rcard { background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.06); overflow: hidden; }
-    .rcard-header { padding: 1rem 1.4rem; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; gap: .5rem; }
-    .rcard-header h3 { font-size: .95rem; font-weight: 700; color: #111827; }
-    .rcard-body { padding: 1.2rem 1.4rem; }
+    .stat-card .sc-icon {
+        font-size: 1.6rem; width: 44px; height: 44px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .stat-card .sc-num  { font-size: 1.7rem; font-weight: 900; color: var(--text-dark); line-height: 1.1; }
+    .stat-card .sc-label { font-size: .85rem; font-weight: 600; color: var(--text-muted); margin-top: .15rem; }
 
-    .empty-section { text-align: center; padding: 2rem; color: #9ca3af; }
+    .reports-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .rcard {
+        background: #fff; border-radius: 18px;
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm); overflow: hidden;
+    }
+    .rcard-header {
+        padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border-subtle);
+        display: flex; align-items: center; gap: .6rem;
+    }
+    .rcard-header h3 { font-size: 1.05rem; font-weight: 800; color: var(--text-dark); }
+    .rcard-body { padding: 1.4rem 1.5rem; }
+
+    .empty-section { text-align: center; padding: 2.5rem; color: var(--text-muted); }
     .empty-section .empty-icon { font-size: 2.5rem; margin-bottom: .5rem; }
-    .empty-section p { font-size: .85rem; }
+    .empty-section p { font-size: .88rem; }
 
     /* Ventas por mes */
-    .month-row { display: flex; align-items: center; gap: .8rem; margin-bottom: .6rem; }
-    .month-name { width: 30px; font-size: .78rem; font-weight: 600; color: #6b7280; }
-    .month-bar-wrap { flex: 1; height: 20px; background: #f3f4f6; border-radius: 5px; overflow: hidden; }
-    .month-bar { height: 100%; background: linear-gradient(90deg, #16a34a, #4ade80); border-radius: 5px; transition: width .4s; }
-    .month-value { font-size: .78rem; font-weight: 700; color: #374151; width: 80px; text-align: right; }
-    .month-qty   { font-size: .75rem; color: #9ca3af; width: 50px; text-align: right; }
+    .month-row { display: flex; align-items: center; gap: .8rem; margin-bottom: .7rem; }
+    .month-name { width: 34px; font-size: .82rem; font-weight: 700; color: var(--text-muted); }
+    .month-bar-wrap { flex: 1; height: 22px; background: #f1f5f9; border-radius: 6px; overflow: hidden; }
+    .month-bar { height: 100%; background: linear-gradient(90deg, #106f4e, #22c584); border-radius: 6px; transition: width .4s; }
+    .month-value { font-size: .82rem; font-weight: 700; color: var(--text-dark); width: 85px; text-align: right; }
+    .month-qty   { font-size: .76rem; color: var(--text-muted); width: 50px; text-align: right; }
 
     /* Top productos */
-    .top-row { display: flex; align-items: center; gap: .7rem; padding: .45rem 0; border-bottom: 1px solid #f9fafb; }
-    .top-rank { width: 22px; height: 22px; border-radius: 50%; background: #16a34a; color: #fff; font-size: .72rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .top-name { flex: 1; font-size: .85rem; color: #111827; font-weight: 500; }
-    .top-qty  { font-size: .82rem; font-weight: 700; color: #16a34a; }
-    .top-ing  { font-size: .78rem; color: #9ca3af; }
+    .top-row { display: flex; align-items: center; gap: .8rem; padding: .6rem 0; border-bottom: 1px solid var(--border-subtle); }
+    .top-rank {
+        width: 24px; height: 24px; border-radius: 50%; background: #106f4e; color: #fff;
+        font-size: .75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .top-name { flex: 1; font-size: .88rem; color: var(--text-dark); font-weight: 600; }
+    .top-qty  { font-size: .85rem; font-weight: 800; color: #106f4e; }
+    .top-ing  { font-size: .8rem; color: var(--text-muted); }
 
     /* Stock bajo */
-    .stock-row { display: flex; align-items: center; justify-content: space-between; padding: .5rem 0; border-bottom: 1px solid #f9fafb; }
+    .stock-row { display: flex; align-items: center; justify-content: space-between; padding: .6rem 0; border-bottom: 1px solid var(--border-subtle); }
     .stock-row:last-child { border-bottom: none; }
-    .stock-name { font-size: .85rem; font-weight: 500; color: #111827; }
-    .stock-qty  { font-size: .85rem; font-weight: 700; color: #ef4444; }
-    .badge-cat  { background: #ede9fe; color: #6d28d9; padding: .18rem .55rem; border-radius: 10px; font-size: .72rem; font-weight: 600; }
+    .stock-name { font-size: .88rem; font-weight: 600; color: var(--text-dark); }
+    .stock-qty  { font-size: .88rem; font-weight: 800; color: #f43f5e; }
+    .badge-cat  { background: #f1f5f9; color: #334155; padding: .2rem .6rem; border-radius: 12px; font-size: .74rem; font-weight: 600; border: 1px solid #e2e8f0; }
 
     /* Compras por proveedor */
-    .compra-row { display: flex; align-items: center; justify-content: space-between; padding: .5rem 0; border-bottom: 1px solid #f9fafb; }
+    .compra-row { display: flex; align-items: center; justify-content: space-between; padding: .6rem 0; border-bottom: 1px solid var(--border-subtle); }
     .compra-row:last-child { border-bottom: none; }
-    .compra-name  { font-size: .85rem; font-weight: 600; color: #111827; }
-    .compra-total { font-size: .85rem; font-weight: 700; color: #16a34a; }
-    .compra-qty   { font-size: .75rem; color: #9ca3af; }
+    .compra-name { font-size: .88rem; font-weight: 600; color: var(--text-dark); }
+    .compra-val  { font-size: .88rem; font-weight: 800; color: #106f4e; }
 </style>
 @endpush
 

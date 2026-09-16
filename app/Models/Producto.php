@@ -11,4 +11,17 @@ class Producto extends Model {
     public function categoria() { return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria'); }
     public function proveedor() { return $this->belongsTo(Proveedor::class, 'id_proveedor', 'id_proveedor'); }
     public function detalleVentas() { return $this->hasMany(DetalleVenta::class, 'id_producto', 'id_producto'); }
+
+    public function getImagenUrlAttribute()
+    {
+        if (empty($this->imagen)) {
+            return 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&q=70';
+        }
+
+        if (str_starts_with($this->imagen, 'http://') || str_starts_with($this->imagen, 'https://')) {
+            return $this->imagen;
+        }
+
+        return asset($this->imagen);
+    }
 }

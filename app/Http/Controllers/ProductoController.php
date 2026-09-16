@@ -56,22 +56,35 @@ class ProductoController extends Controller
     public function store(Request $r)
     {
         $r->validate([
-            'nombre'       => 'required|string|max:150',
-            'codigo'       => 'required|string|max:50|unique:productos,codigo',
-            'descripcion'  => 'nullable|string',
-            'precio'       => 'required|numeric|min:0',
-            'stock_actual' => 'required|integer|min:0',
-            'stock_minimo' => 'required|integer|min:0',
-            'id_categoria' => 'required|exists:categorias,id_categoria',
-            'id_proveedor' => 'nullable|exists:proveedores,id_proveedor',
-            'estado'       => 'required|in:0,1',
+            'nombre'         => 'required|string|max:150',
+            'codigo'         => 'required|string|max:50|unique:productos,codigo',
+            'descripcion'    => 'nullable|string',
+            'precio'         => 'required|numeric|min:0',
+            'stock_actual'   => 'required|integer|min:0',
+            'stock_minimo'   => 'required|integer|min:0',
+            'id_categoria'   => 'required|exists:categorias,id_categoria',
+            'id_proveedor'   => 'nullable|exists:proveedores,id_proveedor',
+            'estado'         => 'required|in:0,1',
+            'imagen_archivo' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
+            'imagen_url'     => 'nullable|string|max:500',
         ]);
 
-        Producto::create($r->only([
+        $data = $r->only([
             'nombre', 'codigo', 'descripcion', 'precio',
             'stock_actual', 'stock_minimo', 'id_categoria',
             'id_proveedor', 'estado',
-        ]));
+        ]);
+
+        if ($r->hasFile('imagen_archivo') && $r->file('imagen_archivo')->isValid()) {
+            $file = $r->file('imagen_archivo');
+            $fileName = 'prod_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/productos'), $fileName);
+            $data['imagen'] = 'uploads/productos/' . $fileName;
+        } elseif ($r->filled('imagen_url')) {
+            $data['imagen'] = trim($r->imagen_url);
+        }
+
+        Producto::create($data);
 
         return redirect()->route('productos.index')
             ->with('success', 'Producto creado correctamente.');
@@ -91,22 +104,47 @@ class ProductoController extends Controller
         $producto = Producto::findOrFail($id);
 
         $r->validate([
-            'nombre'       => 'required|string|max:150',
-            'codigo'       => 'required|string|max:50|unique:productos,codigo,' . $id . ',id_producto',
-            'descripcion'  => 'nullable|string',
-            'precio'       => 'required|numeric|min:0',
-            'stock_actual' => 'required|integer|min:0',
-            'stock_minimo' => 'required|integer|min:0',
-            'id_categoria' => 'required|exists:categorias,id_categoria',
-            'id_proveedor' => 'nullable|exists:proveedores,id_proveedor',
-            'estado'       => 'required|in:0,1',
+            'nombre'         => 'required|string|max:150',
+            'codigo'         => 'required|string|max:50|unique:productos,codigo,' . $id . ',id_producto',
+            'descripcion'    => 'nullable|string',
+            'precio'         => 'required|numeric|min:0',
+            'stock_actual'   => 'required|integer|min:0',
+            'stock_minimo'   => 'required|integer|min:0',
+            'id_categoria'   => 'required|exists:categorias,id_categoria',
+            'id_proveedor'   => 'nullable|exists:proveedores,id_proveedor',
+            'estado'         => 'required|in:0,1',
+            'imagen_archivo' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
+            'imagen_url'     => 'nullable|string|max:500',
+            'eliminar_imagen'=> 'nullable|boolean',
         ]);
 
-        $producto->update($r->only([
+        $data = $r->only([
             'nombre', 'codigo', 'descripcion', 'precio',
             'stock_actual', 'stock_minimo', 'id_categoria',
             'id_proveedor', 'estado',
-        ]));
+        ]);
+
+        if ($r->boolean('eliminar_imagen')) {
+            if ($producto->imagen && file_exists(public_path($producto->imagen))) {
+                @unlink(public_path($producto->imagen));
+            }
+            $data['imagen'] = null;
+        } elseif ($r->hasFile('imagen_archivo') && $r->file('imagen_archivo')->isValid()) {
+            if ($producto->imagen && file_exists(public_path($producto->imagen))) {
+                @unlink(public_path($producto->imagen));
+            }
+            $file = $r->file('imagen_archivo');
+            $fileName = 'prod_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/productos'), $fileName);
+            $data['imagen'] = 'uploads/productos/' . $fileName;
+        } elseif ($r->filled('imagen_url')) {
+            if ($producto->imagen && file_exists(public_path($producto->imagen))) {
+                @unlink(public_path($producto->imagen));
+            }
+            $data['imagen'] = trim($r->imagen_url);
+        }
+
+        $producto->update($data);
 
         return redirect()->route('productos.index')
             ->with('success', 'Producto actualizado correctamente.');
@@ -114,7 +152,11 @@ class ProductoController extends Controller
 
     public function destroy($id)
     {
-        Producto::findOrFail($id)->delete();
+        $producto = Producto::findOrFail($id);
+        if ($producto->imagen && file_exists(public_path($producto->imagen))) {
+            @unlink(public_path($producto->imagen));
+        }
+        $producto->delete();
 
         return redirect()->route('productos.index')
             ->with('success', 'Producto eliminado.');
