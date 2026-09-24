@@ -70,8 +70,10 @@ class AuthController extends Controller
             'password.confirmed' => 'Las contraseñas no coinciden.',
         ]);
 
+        $rolCliente = \App\Models\Rol::where('nombre', 'cliente')->value('id_rol') ?? 3;
+
         $usuario = Usuario::create([
-            'id_rol'        => 3,   // rol "cliente"
+            'id_rol'        => $rolCliente,
             'nombres'       => $request->nombres,
             'apellidos'     => $request->apellidos,
             'email'         => $request->email,

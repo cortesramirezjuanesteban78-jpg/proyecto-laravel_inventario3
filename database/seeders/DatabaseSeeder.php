@@ -15,11 +15,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        \Illuminate\Support\Facades\DB::table('roles')->updateOrInsert(
+            ['id_rol' => 1],
+            ['nombre' => 'administrador', 'descripcion' => 'Acceso total al sistema']
+        );
+        \Illuminate\Support\Facades\DB::table('roles')->updateOrInsert(
+            ['id_rol' => 2],
+            ['nombre' => 'empleado', 'descripcion' => 'Personal operativo de inventario y ventas']
+        );
+        \Illuminate\Support\Facades\DB::table('roles')->updateOrInsert(
+            ['id_rol' => 3],
+            ['nombre' => 'cliente', 'descripcion' => 'Usuario cliente / comprador']
+        );
     }
 }
