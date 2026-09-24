@@ -94,61 +94,437 @@
 
     .pag-wrap { padding: 1rem 1.6rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end; }
 
-    /* Modal */
+    /* ══════════ MODAL NUEVA VENTA (REDESIGNED POS) ══════════ */
     .modal-overlay {
-        display: none; position: fixed; inset: 0; background: rgba(15,23,42,.5);
-        backdrop-filter: blur(4px);
+        display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         z-index: 200; align-items: center; justify-content: center;
+        padding: 1.5rem;
     }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-        background: #fff; border-radius: 20px; padding: 2.2rem;
-        width: 100%; max-width: 580px; position: relative;
-        box-shadow: var(--shadow-lg); max-height: 92vh; overflow-y: auto;
+    .modal-overlay.open { display: flex; animation: fadeInModal .25s ease-out; }
+    @keyframes fadeInModal {
+        from { opacity: 0; transform: scale(0.97); }
+        to { opacity: 1; transform: scale(1); }
     }
-    .modal-title { font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1.4rem; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; }
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; font-size: .82rem; font-weight: 700; color: #334155; margin-bottom: .35rem; }
-    .form-group input, .form-group select {
-        width: 100%; padding: .65rem .85rem; border: 1.5px solid var(--border-subtle); border-radius: 10px;
-        font-family: inherit; font-size: .9rem; outline: none; transition: all .2s;
-    }
-    .form-group input:focus, .form-group select:focus {
-        border-color: #159c6c; box-shadow: 0 0 0 3px rgba(21,156,108,.15);
-    }
-    .modal-footer { display: flex; gap: .8rem; justify-content: flex-end; margin-top: .8rem; }
-    .modal-close {
-        position: absolute; top: 1.2rem; right: 1.2rem; background: #f1f5f9; border: none;
-        border-radius: 8px; width: 30px; height: 30px; cursor: pointer; font-size: 1rem;
-        color: var(--text-muted); transition: all .2s;
-    }
-    .modal-close:hover { background: #fff1f2; color: #f43f5e; }
 
-    /* Product rows in venta */
-    .product-rows { border: 1.5px solid var(--border-subtle); border-radius: 12px; padding: 1rem; margin-bottom: .6rem; background: #fafbfc; }
-    .product-row { display: grid; grid-template-columns: 1fr 90px 32px; gap: .6rem; align-items: center; margin-bottom: .6rem; }
-    .product-row:last-child { margin-bottom: 0; }
-    .product-row select, .product-row input {
-        padding: .5rem .7rem; border: 1.5px solid var(--border-subtle); border-radius: 8px;
-        font-family: inherit; font-size: .86rem; outline: none; background: #fff;
+    .modal-venta-box {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 2.2rem 2.4rem;
+        width: 100%;
+        max-width: 680px;
+        position: relative;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8);
+        max-height: 90vh;
+        overflow-y: auto;
     }
-    .btn-remove-row {
-        background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; border-radius: 8px;
-        width: 32px; height: 32px; cursor: pointer; font-size: .95rem;
-        display: flex; align-items: center; justify-content: center; transition: all .15s;
+
+    /* Modal Header */
+    .modal-header-pos {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-bottom: 1.4rem;
+        border-bottom: 1px solid var(--border-subtle);
+        margin-bottom: 1.4rem;
+        position: relative;
     }
-    .btn-remove-row:hover { transform: scale(1.08); background: #fee2e2; }
-    .btn-add-row {
-        background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; border-radius: 8px;
-        padding: .45rem .9rem; font-family: inherit; font-size: .84rem; font-weight: 700;
-        cursor: pointer; margin-top: .4rem; transition: all .2s;
+    .mhp-icon-wrap {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #0b4e37 0%, #159c6c 100%);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 12px rgba(16, 111, 78, 0.25);
+        flex-shrink: 0;
     }
-    .btn-add-row:hover { background: #d1fae5; }
-    .total-display {
-        background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;
-        padding: .5rem .9rem; font-weight: 700; font-size: .9rem; color: #065f46;
-        margin-bottom: .8rem;
+    .mhp-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+    .mhp-subtitle {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-top: 0.15rem;
+    }
+    .modal-close-pos {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: #f1f5f9;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+    .modal-close-pos:hover {
+        background: #fee2e2;
+        color: #ef4444;
+        transform: rotate(90deg);
+    }
+
+    /* POS Products Container */
+    .pos-section {
+        background: #f8fafc;
+        border: 1px solid var(--border-subtle);
+        border-radius: 18px;
+        padding: 1.2rem;
+        margin-bottom: 1.4rem;
+    }
+    .pos-section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.85rem;
+    }
+    .pos-sec-title {
+        font-size: 0.82rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-dark);
+    }
+    .pos-sec-hint {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #106f4e;
+        background: #ecfdf5;
+        padding: 0.2rem 0.65rem;
+        border-radius: 20px;
+        border: 1px solid #a7f3d0;
+    }
+
+    /* Product row item card */
+    .pos-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .pos-item-card {
+        background: #ffffff;
+        border: 1.5px solid var(--border-subtle);
+        border-radius: 14px;
+        padding: 0.85rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+    }
+    .pos-item-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+    }
+    .pic-prod-col {
+        flex: 1;
+        min-width: 0;
+    }
+    .pos-select-product {
+        width: 100%;
+        padding: 0.55rem 0.8rem;
+        border: 1.5px solid var(--border-subtle);
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        background: #ffffff;
+        outline: none;
+        transition: all 0.2s;
+    }
+    .pos-select-product:focus {
+        border-color: #159c6c;
+        box-shadow: 0 0 0 3px rgba(21, 156, 108, 0.15);
+    }
+    .stock-live-pill {
+        margin-top: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        min-height: 16px;
+    }
+
+    /* Stepper */
+    .pic-qty-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 105px;
+        flex-shrink: 0;
+    }
+    .qty-stepper {
+        display: flex;
+        align-items: center;
+        background: #f1f5f9;
+        border: 1.5px solid var(--border-subtle);
+        border-radius: 10px;
+        overflow: hidden;
+        width: 100%;
+    }
+    .btn-qty-step {
+        width: 32px;
+        height: 36px;
+        background: #f1f5f9;
+        border: none;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s;
+    }
+    .btn-qty-step:hover {
+        background: #e2e8f0;
+    }
+    .pos-qty-input {
+        flex: 1;
+        width: 100%;
+        min-width: 0;
+        border: none;
+        background: transparent;
+        text-align: center;
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: var(--text-dark);
+        outline: none;
+        padding: 0;
+        -moz-appearance: textfield;
+    }
+    .pos-qty-input::-webkit-outer-spin-button,
+    .pos-qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Subtotal Column */
+    .pic-subtotal-col {
+        width: 110px;
+        text-align: right;
+        flex-shrink: 0;
+    }
+    .row-subtotal-label {
+        font-size: 0.68rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-weight: 700;
+        display: block;
+    }
+    .row-subtotal-text {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #106f4e;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    /* Delete Button */
+    .pic-action-col {
+        flex-shrink: 0;
+    }
+    .btn-remove-item {
+        background: #fff;
+        color: #94a3b8;
+        border: 1.5px solid var(--border-subtle);
+        border-radius: 10px;
+        width: 36px;
+        height: 36px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+    .btn-remove-item:hover {
+        background: #fff1f2;
+        border-color: #fca5a5;
+        color: #e11d48;
+        transform: scale(1.05);
+    }
+
+    /* Add Row Button */
+    .btn-add-item-pos {
+        width: 100%;
+        margin-top: 0.85rem;
+        padding: 0.65rem 1rem;
+        border-radius: 12px;
+        border: 2px dashed #cbd5e1;
+        background: #ffffff;
+        color: var(--primary-700);
+        font-family: inherit;
+        font-size: 0.86rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+    .btn-add-item-pos:hover {
+        border-color: #159c6c;
+        background: #ecfdf5;
+        color: #065f46;
+    }
+    .bip-icon {
+        font-size: 1.15rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    /* Checkout Total Box */
+    .pos-checkout-bar {
+        background: linear-gradient(135deg, #042217 0%, #0b4e37 100%);
+        border-radius: 18px;
+        padding: 1.2rem 1.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.3rem;
+        box-shadow: 0 8px 20px rgba(4, 34, 23, 0.25);
+    }
+    .pcb-left {
+        display: flex;
+        flex-direction: column;
+    }
+    .pcb-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #a7f3d0;
+    }
+    .pcb-sub {
+        font-size: 0.78rem;
+        color: #d1fae5;
+        opacity: 0.85;
+        margin-top: 0.1rem;
+    }
+    .pcb-right {
+        display: flex;
+        align-items: baseline;
+        gap: 0.35rem;
+        color: #ffffff;
+    }
+    .pcb-currency {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #6ee7b7;
+    }
+    .pcb-amount {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: #ffffff;
+        font-family: 'Outfit', sans-serif;
+        letter-spacing: -0.03em;
+        line-height: 1;
+    }
+
+    /* Meta Grid */
+    .pos-meta-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr;
+        gap: 0.85rem;
+        margin-bottom: 1.4rem;
+    }
+    .form-group-pos {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+    .form-group-pos label {
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #475569;
+    }
+    .pos-input-meta {
+        width: 100%;
+        padding: 0.6rem 0.8rem;
+        border: 1.5px solid var(--border-subtle);
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        background: #ffffff;
+        outline: none;
+        transition: all 0.2s;
+    }
+    .pos-input-meta:focus {
+        border-color: #159c6c;
+        box-shadow: 0 0 0 3px rgba(21, 156, 108, 0.15);
+    }
+
+    /* Modal Footer */
+    .modal-footer-pos {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.85rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-subtle);
+    }
+    .btn-pos-cancel {
+        padding: 0.7rem 1.4rem;
+        border-radius: 12px;
+        border: 1.5px solid var(--border-subtle);
+        background: #ffffff;
+        color: #64748b;
+        font-family: inherit;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-pos-cancel:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: var(--text-dark);
+    }
+    .btn-pos-submit {
+        background: linear-gradient(135deg, #0b4e37 0%, #159c6c 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 12px;
+        padding: 0.7rem 1.8rem;
+        font-family: inherit;
+        font-size: 0.92rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        box-shadow: 0 4px 14px rgba(16, 111, 78, 0.35);
+        transition: all 0.25s ease;
+    }
+    .btn-pos-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 111, 78, 0.45);
+        filter: brightness(1.05);
+    }
+
+    @media (max-width: 640px) {
+        .modal-venta-box { padding: 1.4rem; }
+        .pos-meta-grid { grid-template-columns: 1fr; }
+        .pos-item-card { flex-wrap: wrap; }
+        .pic-subtotal-col { text-align: left; }
     }
 </style>
 @endpush
@@ -239,59 +615,107 @@
     @endif
 </div>
 
-{{-- Create Venta Modal --}}
+{{-- Create Venta Modal (Redesigned POS) --}}
 <div class="modal-overlay" id="modal-create">
-    <div class="modal-box">
-        <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
-        <div class="modal-title">🛒 Nueva Venta</div>
+    <div class="modal-box modal-venta-box">
+        <!-- Header -->
+        <div class="modal-header-pos">
+            <div class="mhp-icon-wrap">🛒</div>
+            <div>
+                <h2 class="mhp-title">Nueva Venta en Caja</h2>
+                <p class="mhp-subtitle">Punto de Venta (POS) · Selecciona los productos y método de cobro</p>
+            </div>
+            <button type="button" class="modal-close-pos" onclick="closeModal('modal-create')" title="Cerrar ventana">✕</button>
+        </div>
+
         <form method="POST" action="{{ route('ventas.store') }}" id="venta-form">
             @csrf
 
-            {{-- Product rows --}}
-            <div class="form-group">
-                <label>Productos *</label>
-                <div class="product-rows" id="product-rows">
-                    <div class="product-row">
-                        <select name="productos[]" required>
-                            <option value="">Seleccionar producto...</option>
-                            @foreach($productos as $p)
-                            @php $isLow = $p->stock_actual <= $p->stock_minimo; @endphp
-                            <option value="{{ $p->id_producto }}" data-precio="{{ $p->precio }}">
-                                {{ $p->nombre }} — ${{ number_format($p->precio, 2) }} @if($isLow) [⚠️ Stock bajo: {{ $p->stock_actual }}] @else (stock: {{ $p->stock_actual }}) @endif
-                            </option>
-                            @endforeach
-                        </select>
-                        <input type="number" name="cantidades[]" min="1" value="1" placeholder="Cant.">
-                        <button type="button" class="btn-remove-row" onclick="removeRow(this)" title="Quitar">✕</button>
+            <!-- Section: Productos -->
+            <div class="pos-section">
+                <div class="pos-section-head">
+                    <span class="pos-sec-title">Artículos de la Venta</span>
+                    <span class="pos-sec-hint" id="items-counter">1 producto</span>
+                </div>
+
+                <div class="pos-items-list" id="product-rows">
+                    <div class="pos-item-card product-row">
+                        <div class="pic-prod-col">
+                            <select name="productos[]" class="pos-select-product" required onchange="handleProductChange(this)">
+                                <option value="">Seleccionar producto del catálogo...</option>
+                                @foreach($productos as $p)
+                                @php $isLow = $p->stock_actual <= $p->stock_minimo; @endphp
+                                <option value="{{ $p->id_producto }}" data-precio="{{ $p->precio }}">
+                                    {{ $p->nombre }} — ${{ number_format($p->precio, 0, ',', '.') }} @if($isLow) [⚠️ Stock bajo: {{ $p->stock_actual }}] @else (stock: {{ $p->stock_actual }}) @endif
+                                </option>
+                                @endforeach
+                            </select>
+                            <div class="stock-live-pill"></div>
+                        </div>
+
+                        <div class="pic-qty-col">
+                            <div class="qty-stepper">
+                                <button type="button" class="btn-qty-step" onclick="stepQty(this, -1)">−</button>
+                                <input type="number" name="cantidades[]" class="pos-qty-input" min="1" value="1" oninput="calcTotal()" required>
+                                <button type="button" class="btn-qty-step" onclick="stepQty(this, 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="pic-subtotal-col">
+                            <span class="row-subtotal-label">Subtotal</span>
+                            <span class="row-subtotal-text">$0</span>
+                        </div>
+
+                        <div class="pic-action-col">
+                            <button type="button" class="btn-remove-item" onclick="removeRow(this)" title="Quitar producto">
+                                🗑️
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <button type="button" class="btn-add-row" onclick="addRow()">+ Agregar producto</button>
+
+                <button type="button" class="btn-add-item-pos" onclick="addRow()">
+                    <span class="bip-icon">+</span>
+                    <span>Agregar otro producto</span>
+                </button>
             </div>
 
-            <div class="total-display" id="total-display">Total estimado: $0.00</div>
-
-            <div class="form-group">
-                <label>Cliente (opcional)</label>
-                <select name="id_cliente">
-                    <option value="">Público General</option>
-                    @foreach($clientes as $c)
-                    <option value="{{ $c->id_cliente }}">{{ $c->nombre }}</option>
-                    @endforeach
-                </select>
+            <!-- Section: Resumen de Cobro -->
+            <div class="pos-checkout-bar">
+                <div class="pcb-left">
+                    <span class="pcb-label">Total a Cobrar</span>
+                    <span class="pcb-sub" id="pcb-count-text">0 artículos agregados</span>
+                </div>
+                <div class="pcb-right">
+                    <span class="pcb-currency">$</span>
+                    <span class="pcb-amount" id="total-amount-display">0</span>
+                </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Método de Pago *</label>
-                    <select name="metodo_pago" required>
-                        <option value="efectivo">💵 Efectivo</option>
-                        <option value="tarjeta">💳 Tarjeta</option>
-                        <option value="transferencia">🏦 Transferencia</option>
+            <!-- Section: Detalles de la Transacción -->
+            <div class="pos-meta-grid">
+                <div class="form-group-pos">
+                    <label>👤 Cliente</label>
+                    <select name="id_cliente" class="pos-input-meta">
+                        <option value="">Público General</option>
+                        @foreach($clientes as $c)
+                        <option value="{{ $c->id_cliente }}">{{ $c->nombre }} ({{ $c->documento ?: 'Sin doc.' }})</option>
+                        @endforeach
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Estado *</label>
-                    <select name="estado" required>
+
+                <div class="form-group-pos">
+                    <label>💳 Método de Pago *</label>
+                    <select name="metodo_pago" class="pos-input-meta" required>
+                        <option value="efectivo">💵 Efectivo</option>
+                        <option value="tarjeta">💳 Tarjeta (Débito / Crédito)</option>
+                        <option value="transferencia">🏦 Transferencia Bancaria</option>
+                    </select>
+                </div>
+
+                <div class="form-group-pos">
+                    <label>📌 Estado *</label>
+                    <select name="estado" class="pos-input-meta" required>
                         <option value="completada">✅ Completada</option>
                         <option value="pendiente">⏳ Pendiente</option>
                         <option value="cancelada">❌ Cancelada</option>
@@ -299,9 +723,13 @@
                 </div>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn-secondary" onclick="closeModal('modal-create')">Cancelar</button>
-                <button type="submit" class="btn-primary">Registrar Venta</button>
+            <!-- Footer -->
+            <div class="modal-footer-pos">
+                <button type="button" class="btn-pos-cancel" onclick="closeModal('modal-create')">Cancelar</button>
+                <button type="submit" class="btn-pos-submit">
+                    <span>🛒</span>
+                    <span>Confirmar y Cobrar</span>
+                </button>
             </div>
         </form>
     </div>
@@ -322,75 +750,107 @@ const productosData = {
     @endforeach
 };
 
-// Actualizar stock disponible en el modal de nueva venta al cambiar producto
+function formatMoney(num) {
+    return Number(num).toLocaleString('es-CO');
+}
+
+function handleProductChange(selectEl) {
+    updateStockDisplay(selectEl);
+    calcTotal();
+}
+
 function updateStockDisplay(selectEl) {
     const pid = parseInt(selectEl.value);
     const row = selectEl.closest('.product-row');
-    let stockSpan = row.querySelector('.stock-live');
-    if (!stockSpan) {
-        stockSpan = document.createElement('small');
-        stockSpan.className = 'stock-live';
-        stockSpan.style.cssText = 'font-size:.78rem;display:block;margin-top:.25rem;font-weight:600;';
-        selectEl.parentNode.insertBefore(stockSpan, selectEl.nextSibling);
-    }
+    const pill = row.querySelector('.stock-live-pill');
+    if (!pill) return;
+
     if (pid && productosData[pid]) {
         const prod = productosData[pid];
         if (prod.stock <= prod.min) {
-            stockSpan.innerHTML = `<span style="color:#b45309;background:#fef3c7;border:1px solid #fde68a;padding:2px 8px;border-radius:6px;display:inline-block;">⚠️ Stock bajo: ${prod.stock} disponibles (mín: ${prod.min})</span>`;
+            pill.innerHTML = `<span style="color:#b45309;background:#fef3c7;border:1px solid #fde68a;padding:2px 8px;border-radius:6px;display:inline-block;">⚠️ Stock bajo: ${prod.stock} disponibles (mín: ${prod.min})</span>`;
         } else {
-            stockSpan.innerHTML = `<span style="color:#16a34a;">✅ Stock disponible: ${prod.stock}</span>`;
+            pill.innerHTML = `<span style="color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0;padding:2px 8px;border-radius:6px;display:inline-block;">✅ Stock disponible: ${prod.stock}</span>`;
         }
     } else {
-        stockSpan.innerHTML = '';
+        pill.innerHTML = '';
     }
 }
 
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function stepQty(btn, delta) {
+    const row = btn.closest('.product-row');
+    const input = row.querySelector('.pos-qty-input');
+    let current = parseInt(input.value) || 1;
+    let nextVal = Math.max(1, current + delta);
+    input.value = nextVal;
+    calcTotal();
+}
+
+function openModal(id)  { 
+    document.getElementById(id).classList.add('open'); 
+    calcTotal();
+}
+function closeModal(id) { 
+    document.getElementById(id).classList.remove('open'); 
+}
 
 function addRow() {
     const container = document.getElementById('product-rows');
     const firstRow  = container.querySelector('.product-row');
     const newRow    = firstRow.cloneNode(true);
-    newRow.querySelectorAll('select')[0].selectedIndex = 0;
-    newRow.querySelectorAll('input')[0].value = 1;
+    
+    // Reset inputs in cloned row
+    const sel = newRow.querySelector('select');
+    sel.selectedIndex = 0;
+    newRow.querySelector('.pos-qty-input').value = 1;
+    newRow.querySelector('.stock-live-pill').innerHTML = '';
+    newRow.querySelector('.row-subtotal-text').textContent = '$0';
+    
     container.appendChild(newRow);
-    bindRowEvents();
     calcTotal();
 }
 
 function removeRow(btn) {
     const rows = document.querySelectorAll('.product-row');
-    if (rows.length <= 1) { alert('Debe haber al menos un producto.'); return; }
+    if (rows.length <= 1) { 
+        alert('Debe haber al menos un producto en la venta.'); 
+        return; 
+    }
     btn.closest('.product-row').remove();
     calcTotal();
 }
 
 function calcTotal() {
     let total = 0;
-    document.querySelectorAll('.product-row').forEach(row => {
-        const sel = row.querySelector('select');
-        const qty = parseInt(row.querySelector('input').value) || 0;
+    let totalItems = 0;
+    const rows = document.querySelectorAll('.product-row');
+
+    rows.forEach(row => {
+        const sel = row.querySelector('.pos-select-product');
+        const qtyInp = row.querySelector('.pos-qty-input');
+        const subtotalText = row.querySelector('.row-subtotal-text');
+        const qty = parseInt(qtyInp.value) || 0;
         const pid = parseInt(sel.value);
+
         if (pid && productosData[pid]) {
-            total += productosData[pid].precio * qty;
+            const subtotal = productosData[pid].precio * qty;
+            total += subtotal;
+            totalItems += qty;
+            if (subtotalText) subtotalText.textContent = '$' + formatMoney(subtotal);
+        } else {
+            if (subtotalText) subtotalText.textContent = '$0';
         }
     });
-    document.getElementById('total-display').textContent = 'Total estimado: $' + total.toFixed(2);
-}
 
-function bindRowEvents() {
-    document.querySelectorAll('.product-row select').forEach(sel => {
-        sel.onchange = function() { calcTotal(); updateStockDisplay(this); };
-        // Mostrar stock al abrir modal si ya tiene valor
-        if (sel.value) updateStockDisplay(sel);
-    });
-    document.querySelectorAll('.product-row input[type=number]').forEach(inp => {
-        inp.oninput = calcTotal;
-    });
-}
+    const totalDisplay = document.getElementById('total-amount-display');
+    if (totalDisplay) totalDisplay.textContent = formatMoney(total);
 
-bindRowEvents();
+    const countText = document.getElementById('pcb-count-text');
+    if (countText) countText.textContent = totalItems + (totalItems === 1 ? ' artículo agregado' : ' artículos agregados');
+
+    const counterBadge = document.getElementById('items-counter');
+    if (counterBadge) counterBadge.textContent = rows.length + (rows.length === 1 ? ' producto' : ' productos');
+}
 
 function filterTable() {
     const q = document.getElementById('search-input').value.toLowerCase();
