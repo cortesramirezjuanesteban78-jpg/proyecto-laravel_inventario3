@@ -66,5 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::post('inventario/{id}/mover', [InventarioController::class, 'mover'])->name('inventario.mover');
 
     // Reportes
-    Route::get('reportes', [ReporteController::class, 'index'])->name('reportes.index');
+    Route::get('reportes',              [ReporteController::class, 'index'])->name('reportes.index');
+    Route::get('reportes/export/pdf',   [ReporteController::class, 'exportPdf'])->name('reportes.pdf');
+    Route::get('reportes/export/excel', [ReporteController::class, 'exportExcel'])->name('reportes.excel');
 });

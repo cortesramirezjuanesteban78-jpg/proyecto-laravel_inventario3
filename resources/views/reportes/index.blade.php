@@ -5,21 +5,48 @@
 @section('page-subtitle', 'Estadísticas y análisis del negocio')
 
 @section('page-action')
-<div style="display:flex;align-items:center;gap:.8rem;">
-    <form method="GET" action="{{ route('reportes.index') }}" style="display:flex;align-items:center;gap:.5rem;">
-        <label style="font-size:.82rem;color:#6b7280;font-weight:600;">📅 Año:</label>
+<div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
+    <form method="GET" action="{{ route('reportes.index') }}" style="display:flex;align-items:center;gap:.4rem;">
+        <label style="font-size:.82rem;color:var(--text-muted);font-weight:700;">📅 Año:</label>
         <select name="year" onchange="this.form.submit()"
-            style="padding:.4rem .7rem;border:1.5px solid #e5e7eb;border-radius:8px;font-family:inherit;font-size:.85rem;outline:none;">
+            style="padding:.45rem .8rem;border:1.5px solid var(--border-subtle);border-radius:10px;font-family:inherit;font-size:.85rem;outline:none;background:#fff;font-weight:600;color:var(--text-dark);">
             @for($y = now()->year; $y >= now()->year - 4; $y--)
             <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
             @endfor
         </select>
     </form>
+    <a href="{{ route('reportes.pdf', ['year' => $year]) }}" class="btn-export-pdf" title="Descargar informe completo en formato PDF">
+        📄 Exportar PDF
+    </a>
+    <a href="{{ route('reportes.excel', ['year' => $year]) }}" class="btn-export-excel" title="Descargar informe en hoja de cálculo Excel">
+        📊 Exportar Excel
+    </a>
 </div>
 @endsection
 
 @push('styles')
 <style>
+    .btn-export-pdf {
+        background: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%);
+        color: #fff; text-decoration: none; padding: .48rem 1rem;
+        border-radius: 10px; font-family: inherit; font-size: .84rem; font-weight: 700;
+        display: inline-flex; align-items: center; gap: .4rem;
+        box-shadow: 0 4px 12px rgba(244,63,94,.25); transition: all .2s ease;
+    }
+    .btn-export-pdf:hover {
+        transform: translateY(-2px); box-shadow: 0 6px 16px rgba(244,63,94,.38); color: #fff;
+    }
+    .btn-export-excel {
+        background: linear-gradient(135deg, #0b4e37 0%, #159c6c 100%);
+        color: #fff; text-decoration: none; padding: .48rem 1rem;
+        border-radius: 10px; font-family: inherit; font-size: .84rem; font-weight: 700;
+        display: inline-flex; align-items: center; gap: .4rem;
+        box-shadow: 0 4px 12px rgba(21,156,108,.25); transition: all .2s ease;
+    }
+    .btn-export-excel:hover {
+        transform: translateY(-2px); box-shadow: 0 6px 16px rgba(21,156,108,.38); color: #fff;
+    }
+
     .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.2rem; margin-bottom: 2rem; }
     .stat-card {
         border-radius: 16px; padding: 1.3rem 1.5rem; background: #fff;
