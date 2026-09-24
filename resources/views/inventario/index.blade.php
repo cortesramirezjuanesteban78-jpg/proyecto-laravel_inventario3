@@ -138,6 +138,70 @@
         padding: .6rem .9rem; font-weight: 700; font-size: .9rem; color: #065f46;
         margin-bottom: 1.2rem;
     }
+
+    /* Alert Box */
+    .inventario-alert-box {
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        border: 1.5px solid #fcd34d;
+        border-radius: 16px;
+        padding: 1rem 1.4rem;
+        margin-bottom: 1.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.2rem;
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.08);
+    }
+    .iab-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .iab-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #fef08a;
+        border: 1px solid #fde047;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+    .iab-text strong {
+        display: block;
+        color: #92400e;
+        font-size: 0.95rem;
+        font-weight: 800;
+        margin-bottom: 0.15rem;
+    }
+    .iab-text p {
+        color: #b45309;
+        font-size: 0.82rem;
+        margin: 0;
+    }
+    .btn-filter-low {
+        background: #d97706;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 0.5rem 1.1rem;
+        font-family: inherit;
+        font-size: 0.84rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+        white-space: nowrap;
+    }
+    .btn-filter-low:hover {
+        background: #b45309;
+        transform: translateY(-1px);
+    }
+    .btn-filter-low.active {
+        background: #92400e;
+    }
 </style>
 @endpush
 
@@ -162,6 +226,21 @@
         <div><div class="sc-num" id="stat-valor">${{ number_format($valorTotal, 0) }}</div><div class="sc-label">Valor Total</div></div>
     </div>
 </div>
+
+@if($stockBajo > 0)
+<div class="inventario-alert-box">
+    <div class="iab-left">
+        <div class="iab-icon">⚠️</div>
+        <div class="iab-text">
+            <strong>¡Atención Operativa! Hay {{ $stockBajo }} {{ $stockBajo == 1 ? 'producto' : 'productos' }} con Stock Bajo o Agotado.</strong>
+            <p>Las existencias están igual o por debajo del stock mínimo estipulado. Se recomienda gestionar abastecimiento con proveedores.</p>
+        </div>
+    </div>
+    <button type="button" class="btn-filter-low" id="btnFilterLow" onclick="toggleLowStockFilter()">
+        ⚠️ Ver solo stock bajo ({{ $stockBajo }})
+    </button>
+</div>
+@endif
 
 {{-- Search --}}
 <form method="GET" action="{{ route('inventario.index') }}" class="filters-row">
@@ -306,9 +385,33 @@ function fmtNum(n) {
     return Number(n).toLocaleString('es');
 }
 
+let showingOnlyLow = false;
+function toggleLowStockFilter() {
+    showingOnlyLow = !showingOnlyLow;
+    const btn = document.getElementById('btnFilterLow');
+    if (btn) {
+        btn.classList.toggle('active', showingOnlyLow);
+        btn.textContent = showingOnlyLow ? '📋 Mostrar todos los productos' : '⚠️ Ver solo stock bajo ({{ $stockBajo }})';
+    }
+    const rows = document.querySelectorAll('#inventory-tbody tr');
+    rows.forEach(r => {
+        const badge = r.querySelector('.badge-bajo, .badge-agot');
+        if (showingOnlyLow) {
+            r.style.display = badge ? '' : 'none';
+        } else {
+            r.style.display = '';
+        }
+    });
+}
+
 function renderRows(productos) {
+    if (showingOnlyLow) {
+        productos = productos.filter(p => p.level === 'bajo' || p.level === 'agot');
+    }
+
     if (!productos.length) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem;color:#9ca3af;">No hay productos activos.</td></tr>`;
+        const msg = showingOnlyLow ? 'No hay productos con stock bajo o agotado actualmente.' : 'No hay productos activos.';
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem;color:#9ca3af;">${msg}</td></tr>`;
         return;
     }
 

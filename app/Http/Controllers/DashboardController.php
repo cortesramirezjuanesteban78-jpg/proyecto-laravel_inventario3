@@ -18,7 +18,18 @@ class DashboardController extends Controller
                 'categorias'  => DB::table('categorias')->count(),
                 'proveedores' => DB::table('proveedores')->where('estado', 1)->count(),
             ];
-            return view('dashboard', compact('stats'));
+            $stockBajoCount = DB::table('productos')
+                ->where('estado', 1)
+                ->whereColumn('stock_actual', '<=', 'stock_minimo')
+                ->count();
+            $productosStockBajo = \App\Models\Producto::with('categoria')
+                ->where('estado', 1)
+                ->whereColumn('stock_actual', '<=', 'stock_minimo')
+                ->orderBy('stock_actual')
+                ->limit(6)
+                ->get();
+
+            return view('dashboard', compact('stats', 'stockBajoCount', 'productosStockBajo'));
         }
 
         // ── Panel Empleado ──────────────────────────────────────

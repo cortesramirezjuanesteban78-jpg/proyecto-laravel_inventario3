@@ -146,8 +146,17 @@ class ProductoController extends Controller
 
         $producto->update($data);
 
-        return redirect()->route('productos.index')
+        $response = redirect()->route('productos.index')
             ->with('success', 'Producto actualizado correctamente.');
+
+        if ($producto->stock_actual <= $producto->stock_minimo) {
+            $estado = $producto->stock_actual == 0 
+                ? '¡Agotado! (0 unidades)' 
+                : 'Stock bajo (' . $producto->stock_actual . ' de ' . $producto->stock_minimo . ' mín.)';
+            $response->with('warning', '⚠️ Atención: El producto <strong>' . e($producto->nombre) . '</strong> ha quedado en ' . $estado . '.');
+        }
+
+        return $response;
     }
 
     public function destroy($id)

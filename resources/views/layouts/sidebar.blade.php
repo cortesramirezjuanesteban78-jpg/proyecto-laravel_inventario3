@@ -350,9 +350,174 @@
         }
         .flash-close:hover { opacity: 1; }
 
+        /* ── Stock Alert Styles ── */
+        .sidebar-stock-badge {
+            margin-left: auto;
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 0.15rem 0.55rem;
+            border-radius: 20px;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+            animation: badge-pulse 2s infinite ease-in-out;
+            line-height: 1.2;
+        }
+        @keyframes badge-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header-stock-alert {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: #fffbeb;
+            border: 1.5px solid #fde68a;
+            color: #b45309;
+            padding: 0.4rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(217, 119, 6, 0.1);
+        }
+        .header-stock-alert:hover {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            transform: translateY(-1px);
+            color: #92400e;
+        }
+
+        .flash-warning {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            padding: 0.9rem 1.3rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-size: 0.92rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stock-banner-alert {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1.5px solid #fcd34d;
+            border-radius: 16px;
+            padding: 1rem 1.3rem;
+            margin-bottom: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.2rem;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.1);
+            position: relative;
+            animation: fadeInDown 0.3s ease-out;
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .sba-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+        .sba-icon-bubble {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: #fef08a;
+            border: 1px solid #fde047;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(217, 119, 6, 0.15);
+        }
+        .sba-title {
+            color: #78350f;
+            font-size: 0.92rem;
+            font-weight: 500;
+            line-height: 1.35;
+        }
+        .sba-title strong {
+            color: #b45309;
+            font-weight: 800;
+            font-size: 0.96rem;
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+        .sba-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.45rem;
+        }
+        .sba-pill {
+            font-size: 0.76rem;
+            font-weight: 700;
+            background: #ffffff;
+            color: #b45309;
+            border: 1px solid #fcd34d;
+            padding: 0.2rem 0.55rem;
+            border-radius: 8px;
+        }
+        .sba-pill-out {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fca5a5;
+        }
+        .sba-more {
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: #92400e;
+            align-self: center;
+        }
+        .sba-right {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-shrink: 0;
+        }
+        .btn-sba-go {
+            background: #d97706;
+            color: #ffffff !important;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3);
+            white-space: nowrap;
+        }
+        .btn-sba-go:hover {
+            background: #b45309;
+            transform: translateY(-1px);
+        }
+        .sba-dismiss {
+            background: none;
+            border: none;
+            font-size: 1.15rem;
+            color: #92400e;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            padding: 0.2rem 0.4rem;
+        }
+        .sba-dismiss:hover { opacity: 1; }
+
         @media (max-width: 1024px) {
             .sidebar { width: 80px; min-width: 80px; }
-            .sidebar-logo .name, .sidebar-logo .role-tag, .menu-label, .user-info-side, .btn-logout-side span { display: none; }
+            .sidebar-logo .name, .sidebar-logo .role-tag, .menu-label, .user-info-side, .btn-logout-side span, .sidebar-stock-badge { display: none; }
             .nav-link { justify-content: center; padding: 0.75rem; }
             .main-panel { margin-left: 80px; }
             .page-header-bar { padding: 1.2rem 1.5rem; }
@@ -363,7 +528,14 @@
 </head>
 <body>
 
-@php $activeMenu = $activeMenu ?? \Illuminate\Support\Facades\Route::currentRouteName(); @endphp
+@php
+    $activeMenu = $activeMenu ?? \Illuminate\Support\Facades\Route::currentRouteName();
+    $productosAlertaStock = \App\Models\Producto::where('estado', 1)
+        ->whereColumn('stock_actual', '<=', 'stock_minimo')
+        ->orderBy('stock_actual', 'asc')
+        ->get();
+    $conteoStockBajo = $productosAlertaStock->count();
+@endphp
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -419,6 +591,9 @@
                class="nav-link {{ Str::startsWith($activeMenu, 'inventario') ? 'active' : '' }}">
                 <span class="nav-icon">🏗️</span>
                 <span>Inventario</span>
+                @if($conteoStockBajo > 0)
+                    <span class="sidebar-stock-badge" title="{{ $conteoStockBajo }} producto(s) con stock bajo">⚠️ {{ $conteoStockBajo }}</span>
+                @endif
             </a>
         </li>
         @if(Auth::user()->rol === 'administrador')
@@ -478,7 +653,15 @@
             <h1>@yield('page-title', 'Panel')</h1>
             <div class="subtitle">@yield('page-subtitle')</div>
         </div>
-        <div>@yield('page-action')</div>
+        <div style="display:flex;align-items:center;gap:.8rem;">
+            @if($conteoStockBajo > 0)
+            <a href="{{ route('inventario.index') }}" class="header-stock-alert" title="Ver {{ $conteoStockBajo }} productos con stock bajo">
+                <span>⚠️</span>
+                <span><b>{{ $conteoStockBajo }}</b> Stock Bajo</span>
+            </a>
+            @endif
+            <div>@yield('page-action')</div>
+        </div>
     </div>
 
     <!-- Content -->
@@ -490,11 +673,47 @@
             <button class="flash-close" onclick="document.getElementById('flash-ok').remove()">✕</button>
         </div>
         @endif
+        @if(session('warning'))
+        <div class="flash-warning" id="flash-warn">
+            <span style="font-size:1.2rem;">⚠️</span>
+            <div style="flex:1;">{!! session('warning') !!}</div>
+            <button class="flash-close" onclick="document.getElementById('flash-warn').remove()">✕</button>
+        </div>
+        @endif
         @if(session('error'))
         <div class="flash-error" id="flash-err">
             <span>❌</span>
             <span>{{ session('error') }}</span>
             <button class="flash-close" onclick="document.getElementById('flash-err').remove()">✕</button>
+        </div>
+        @endif
+
+        {{-- Alerta Global de Stock Bajo si hay productos críticos (visible en módulos fuera de inventario) --}}
+        @if($conteoStockBajo > 0 && !request()->routeIs('inventario.index'))
+        <div class="stock-banner-alert" id="stockAlertBanner">
+            <div class="sba-left">
+                <div class="sba-icon-bubble">⚠️</div>
+                <div>
+                    <div class="sba-title">
+                        <strong>¡Alerta de Inventario: Stock Bajo!</strong>
+                        <span>Hay <b>{{ $conteoStockBajo }}</b> {{ $conteoStockBajo == 1 ? 'producto' : 'productos' }} con existencias en nivel crítico o por debajo del mínimo:</span>
+                    </div>
+                    <div class="sba-list">
+                        @foreach($productosAlertaStock->take(4) as $pa)
+                            <span class="sba-pill {{ $pa->stock_actual == 0 ? 'sba-pill-out' : '' }}">
+                                {{ $pa->nombre }}: <b>{{ $pa->stock_actual }}</b> / mín. {{ $pa->stock_minimo }}
+                            </span>
+                        @endforeach
+                        @if($conteoStockBajo > 4)
+                            <span class="sba-more">+{{ $conteoStockBajo - 4 }} más</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="sba-right">
+                <a href="{{ route('inventario.index') }}" class="btn-sba-go">Gestionar Inventario →</a>
+                <button type="button" class="sba-dismiss" onclick="document.getElementById('stockAlertBanner').remove()" title="Cerrar aviso">✕</button>
+            </div>
         </div>
         @endif
 

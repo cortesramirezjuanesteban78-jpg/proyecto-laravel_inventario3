@@ -86,6 +86,7 @@ class VentaController extends Controller
                 'total'       => $total,
             ]);
 
+            $productosConAlerta = [];
             foreach ($detalles as $detalle) {
                 DetalleVenta::create([
                     'id_venta'    => $venta->id_venta,
@@ -99,6 +100,11 @@ class VentaController extends Controller
                 $producto->stock_actual -= $detalle['cantidad'];
                 $producto->save();
 
+                if ($producto->stock_actual <= $producto->stock_minimo) {
+                    $nivel = $producto->stock_actual == 0 ? '¡AGOTADO!' : 'quedan ' . $producto->stock_actual . ' unid. (mín. ' . $producto->stock_minimo . ')';
+                    $productosConAlerta[] = '<strong>' . e($producto->nombre) . '</strong> (' . $nivel . ')';
+                }
+
                 MovimientoInventario::create([
                     'id_producto'      => $detalle['id_producto'],
                     'id_usuario'       => Auth::user()->id_usuario,
@@ -111,8 +117,14 @@ class VentaController extends Controller
 
             DB::commit();
 
-            return redirect()->route('ventas.index')
-                ->with('success', 'Venta registrada correctamente. Total: $' . number_format($total, 2));
+            $response = redirect()->route('ventas.index')
+                ->with('success', 'Venta #' . $venta->id_venta . ' registrada correctamente. Total: $' . number_format($total, 2));
+
+            if (!empty($productosConAlerta)) {
+                $response->with('warning', '⚠️ <strong>¡Alerta de Stock Crítico!</strong> Tras esta venta, se requiere reabastecimiento para: ' . implode(', ', $productosConAlerta));
+            }
+
+            return $response;
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()

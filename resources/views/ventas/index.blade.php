@@ -255,8 +255,9 @@
                         <select name="productos[]" required>
                             <option value="">Seleccionar producto...</option>
                             @foreach($productos as $p)
+                            @php $isLow = $p->stock_actual <= $p->stock_minimo; @endphp
                             <option value="{{ $p->id_producto }}" data-precio="{{ $p->precio }}">
-                                {{ $p->nombre }} — ${{ number_format($p->precio, 2) }} (stock: {{ $p->stock_actual }})
+                                {{ $p->nombre }} — ${{ number_format($p->precio, 2) }} @if($isLow) [⚠️ Stock bajo: {{ $p->stock_actual }}] @else (stock: {{ $p->stock_actual }}) @endif
                             </option>
                             @endforeach
                         </select>
@@ -312,7 +313,12 @@
 <script>
 const productosData = {
     @foreach($productos as $p)
-    {{ $p->id_producto }}: { nombre: '{{ addslashes($p->nombre) }}', precio: {{ $p->precio }}, stock: {{ $p->stock_actual }} },
+    {{ $p->id_producto }}: { 
+        nombre: '{{ addslashes($p->nombre) }}', 
+        precio: {{ $p->precio }}, 
+        stock: {{ $p->stock_actual }},
+        min: {{ $p->stock_minimo }}
+    },
     @endforeach
 };
 
@@ -324,14 +330,18 @@ function updateStockDisplay(selectEl) {
     if (!stockSpan) {
         stockSpan = document.createElement('small');
         stockSpan.className = 'stock-live';
-        stockSpan.style.cssText = 'color:#6b7280;font-size:.75rem;display:block;margin-top:.15rem;';
+        stockSpan.style.cssText = 'font-size:.78rem;display:block;margin-top:.25rem;font-weight:600;';
         selectEl.parentNode.insertBefore(stockSpan, selectEl.nextSibling);
     }
     if (pid && productosData[pid]) {
-        stockSpan.textContent = 'Stock disponible: ' + productosData[pid].stock;
-        stockSpan.style.color = productosData[pid].stock > 0 ? '#16a34a' : '#ef4444';
+        const prod = productosData[pid];
+        if (prod.stock <= prod.min) {
+            stockSpan.innerHTML = `<span style="color:#b45309;background:#fef3c7;border:1px solid #fde68a;padding:2px 8px;border-radius:6px;display:inline-block;">⚠️ Stock bajo: ${prod.stock} disponibles (mín: ${prod.min})</span>`;
+        } else {
+            stockSpan.innerHTML = `<span style="color:#16a34a;">✅ Stock disponible: ${prod.stock}</span>`;
+        }
     } else {
-        stockSpan.textContent = '';
+        stockSpan.innerHTML = '';
     }
 }
 

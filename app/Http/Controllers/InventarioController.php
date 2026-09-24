@@ -130,7 +130,16 @@ class InventarioController extends Controller
             'observacion'     => $r->observacion,
         ]);
 
-        return redirect()->back()
+        $response = redirect()->back()
             ->with('success', 'Movimiento registrado correctamente.');
+
+        if ($producto->stock_actual <= $producto->stock_minimo) {
+            $estado = $producto->stock_actual == 0 
+                ? 'AGOTADO (0 unidades)' 
+                : 'STOCK BAJO (' . $producto->stock_actual . ' de ' . $producto->stock_minimo . ' mín.)';
+            $response->with('warning', '⚠️ ¡Alerta de Inventario! El producto <strong>' . e($producto->nombre) . '</strong> ha quedado en nivel crítico: ' . $estado . '.');
+        }
+
+        return $response;
     }
 }

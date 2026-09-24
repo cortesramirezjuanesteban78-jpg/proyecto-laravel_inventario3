@@ -160,6 +160,111 @@
         transform: translateX(4px);
     }
 
+    /* ── Stock Alert Card in Dashboard ── */
+    .dash-stock-alert-card {
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        border: 1.5px solid #fcd34d;
+        border-radius: 18px;
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 2.2rem;
+        box-shadow: 0 4px 14px rgba(217, 119, 6, 0.08);
+    }
+    .dsac-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.1rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .dsac-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: #fef08a;
+        border: 1px solid #fde047;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+    .dsac-btn {
+        background: #d97706;
+        color: #fff !important;
+        font-size: 0.84rem;
+        font-weight: 700;
+        padding: 0.5rem 1.1rem;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.2s;
+        box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+    }
+    .dsac-btn:hover {
+        background: #b45309;
+        transform: translateY(-1px);
+    }
+    .dsac-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.85rem;
+    }
+    .dsac-item {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        border: 1px solid #fde68a;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
+    .dsac-item.dsac-out {
+        border-color: #fca5a5;
+        background: #fff5f5;
+    }
+    .dsac-item-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    .dsac-item-info strong {
+        font-size: 0.88rem;
+        color: #1f2937;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .dsac-item-info span {
+        font-size: 0.74rem;
+        color: #6b7280;
+        margin-top: 0.1rem;
+    }
+    .dsac-badge {
+        font-size: 0.76rem;
+        font-weight: 800;
+        padding: 0.25rem 0.6rem;
+        border-radius: 8px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .dsac-badge.badge-low {
+        background: #fef3c7;
+        color: #b45309;
+        border: 1px solid #fde68a;
+    }
+    .dsac-badge.badge-out {
+        background: #fee2e2;
+        color: #dc2626;
+        border: 1px solid #fca5a5;
+    }
+    @media (max-width: 1024px) {
+        .dsac-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+        .dsac-grid { grid-template-columns: 1fr; }
+    }
+
     @media (max-width: 1100px) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
         .quick-grid { grid-template-columns: repeat(2, 1fr); }
@@ -204,6 +309,39 @@
         <span class="sc-bg">🚚</span>
     </div>
 </div>
+
+@if(isset($stockBajoCount) && $stockBajoCount > 0)
+<!-- Widget Alerta Stock Bajo -->
+<div class="dash-stock-alert-card">
+    <div class="dsac-header">
+        <div style="display:flex;align-items:center;gap:.75rem;">
+            <div class="dsac-icon">⚠️</div>
+            <div>
+                <h3 style="font-size:1.05rem;font-weight:800;color:#92400e;">Alerta de Inventario: Stock Crítico</h3>
+                <p style="font-size:.84rem;color:#b45309;margin-top:.15rem;">Hay <b>{{ $stockBajoCount }}</b> {{ $stockBajoCount == 1 ? 'producto con existencias mínimas o agotadas' : 'productos con existencias mínimas o agotadas' }}.</p>
+            </div>
+        </div>
+        <a href="{{ route('inventario.index') }}" class="dsac-btn">Gestionar Inventario →</a>
+    </div>
+    <div class="dsac-grid">
+        @foreach($productosStockBajo as $pb)
+        <div class="dsac-item {{ $pb->stock_actual == 0 ? 'dsac-out' : '' }}">
+            <div class="dsac-item-info">
+                <strong>{{ $pb->nombre }}</strong>
+                <span>{{ $pb->categoria ? $pb->categoria->nombre : 'Sin categoría' }} · Cód: {{ $pb->codigo }}</span>
+            </div>
+            <div class="dsac-badge {{ $pb->stock_actual == 0 ? 'badge-out' : 'badge-low' }}">
+                @if($pb->stock_actual == 0)
+                    AGOTADO (0)
+                @else
+                    {{ $pb->stock_actual }} / mín. {{ $pb->stock_minimo }}
+                @endif
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
 
 <!-- Accesos Rápidos -->
 <div class="section-title">Módulos de Gestión Rápida</div>
