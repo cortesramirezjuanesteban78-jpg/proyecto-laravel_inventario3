@@ -47,11 +47,19 @@
         transform: translateY(-2px); box-shadow: 0 6px 16px rgba(21,156,108,.38); color: #fff;
     }
 
-    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.2rem; margin-bottom: 2rem; }
+    .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.1rem; margin-bottom: 2rem; }
+    @media (max-width: 1280px) {
+        .stats-row { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .stats-row { grid-template-columns: 1fr; }
+        .ganancias-banner { flex-direction: column; align-items: flex-start !important; }
+        .gb-kpis { width: 100%; justify-content: space-between; }
+    }
     .stat-card {
-        border-radius: 16px; padding: 1.3rem 1.5rem; background: #fff;
+        border-radius: 16px; padding: 1.3rem 1.4rem; background: #fff;
         border: 1px solid var(--border-light);
-        box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1rem;
+        box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 0.9rem;
         transition: transform .2s, box-shadow .2s;
     }
     .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
@@ -64,12 +72,104 @@
     .stat-card.orange { border-left: 4px solid #d97706; }
     .stat-card.orange .sc-icon { background: #fffbeb; border: 1px solid #fef3c7; }
 
+    .stat-card.ganancias-hero {
+        background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%);
+        border: 1.5px solid #86efac;
+        border-left: 5px solid #106f4e;
+        box-shadow: 0 4px 14px rgba(16, 111, 78, 0.12);
+    }
+    .stat-card.ganancias-hero .sc-icon {
+        background: #dcfce7;
+        border: 1px solid #86efac;
+        color: #106f4e;
+    }
+    .badge-margen {
+        background: #106f4e;
+        color: #fff;
+        font-size: .68rem;
+        font-weight: 800;
+        padding: .15rem .45rem;
+        border-radius: 12px;
+        white-space: nowrap;
+    }
+    .text-ganancia {
+        color: #0b4e37 !important;
+    }
+
+    /* Ganancias Banner */
+    .ganancias-banner {
+        background: linear-gradient(135deg, #0b4e37 0%, #159c6c 100%);
+        border-radius: 18px;
+        padding: 1.6rem 2rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 24px rgba(16, 111, 78, 0.22);
+    }
+    .gb-badge {
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 0.6rem;
+    }
+    .ganancias-banner h2 {
+        font-size: 1.65rem;
+        font-weight: 900;
+        margin: 0 0 0.4rem 0;
+        letter-spacing: -0.02em;
+    }
+    .gb-amount {
+        color: #86efac;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .ganancias-banner p {
+        font-size: 0.88rem;
+        color: rgba(255, 255, 255, 0.88);
+        margin: 0;
+        line-height: 1.4;
+    }
+    .gb-kpis {
+        display: flex;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+    .gb-kpi-item {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(4px);
+        padding: 0.8rem 1.2rem;
+        border-radius: 14px;
+        text-align: center;
+        min-width: 105px;
+    }
+    .gb-kpi-item span {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.82);
+        display: block;
+        font-weight: 700;
+        margin-bottom: 0.2rem;
+    }
+    .gb-kpi-item strong {
+        font-size: 1.25rem;
+        font-weight: 900;
+        color: #ffffff;
+    }
+
     .stat-card .sc-icon {
         font-size: 1.6rem; width: 44px; height: 44px; border-radius: 12px;
         display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .stat-card .sc-num  { font-size: 1.7rem; font-weight: 900; color: var(--text-dark); line-height: 1.1; }
-    .stat-card .sc-label { font-size: .85rem; font-weight: 600; color: var(--text-muted); margin-top: .15rem; }
+    .stat-card .sc-num  { font-size: 1.65rem; font-weight: 900; color: var(--text-dark); line-height: 1.1; }
+    .stat-card .sc-label { font-size: .84rem; font-weight: 600; color: var(--text-muted); margin-top: .15rem; }
 
     .reports-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     .rcard {
@@ -123,15 +223,36 @@
 
 @section('content')
 
+{{-- Ganancias Banner --}}
+<div class="ganancias-banner">
+    <div>
+        <div class="gb-badge">📊 Rendimiento Económico {{ $year }}</div>
+        <h2>Ganancia Neta: <span class="gb-amount">${{ number_format($ganancias, 0) }}</span></h2>
+        <p>Ventas totales acumuladas de <b>${{ number_format($totalVentas, 0) }}</b> contra <b>${{ number_format($totalCompras, 0) }}</b> en compras a proveedores. Margen de rentabilidad: <b>{{ $margenGanancia }}%</b>.</p>
+    </div>
+    <div class="gb-kpis">
+        <div class="gb-kpi-item">
+            <span>Margen Neto</span>
+            <strong>{{ $margenGanancia }}%</strong>
+        </div>
+        <div class="gb-kpi-item">
+            <span>Balance</span>
+            <strong style="color:{{ $ganancias >= 0 ? '#86efac' : '#fecdd3' }}">{{ $ganancias >= 0 ? 'Rentable' : 'Déficit' }}</strong>
+        </div>
+    </div>
+</div>
+
 {{-- Stat cards --}}
 <div class="stats-row">
-    <div class="stat-card green">
-        <div class="sc-icon">👥</div>
-        <div><div class="sc-num">{{ $totalUsuarios }}</div><div class="sc-label">Usuarios</div></div>
-    </div>
-    <div class="stat-card blue">
-        <div class="sc-icon">📦</div>
-        <div><div class="sc-num">{{ $totalProductos }}</div><div class="sc-label">Productos</div></div>
+    <div class="stat-card ganancias-hero">
+        <div class="sc-icon">📈</div>
+        <div>
+            <div class="sc-num text-ganancia">${{ number_format($ganancias, 0) }}</div>
+            <div class="sc-label" style="display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;">
+                <span>Ganancias</span>
+                <span class="badge-margen">+{{ $margenGanancia }}%</span>
+            </div>
+        </div>
     </div>
     <div class="stat-card teal">
         <div class="sc-icon">💰</div>
@@ -141,16 +262,24 @@
         <div class="sc-icon">🚚</div>
         <div><div class="sc-num">${{ number_format($totalCompras, 0) }}</div><div class="sc-label">Compras</div></div>
     </div>
+    <div class="stat-card blue">
+        <div class="sc-icon">📦</div>
+        <div><div class="sc-num">{{ $totalProductos }}</div><div class="sc-label">Productos</div></div>
+    </div>
+    <div class="stat-card green">
+        <div class="sc-icon">👥</div>
+        <div><div class="sc-num">{{ $totalUsuarios }}</div><div class="sc-label">Usuarios</div></div>
+    </div>
 </div>
 
 {{-- Reports Grid --}}
 <div class="reports-grid">
 
-    {{-- Ventas por mes --}}
+    {{-- Ventas y Ganancias por mes --}}
     <div class="rcard">
         <div class="rcard-header">
             <span>📈</span>
-            <h3>Ventas por Mes — {{ $year }}</h3>
+            <h3>Ventas y Ganancias por Mes — {{ $year }}</h3>
         </div>
         <div class="rcard-body">
             @php $hasVentas = collect($meses)->sum('total') > 0; @endphp
@@ -161,7 +290,10 @@
                     <div class="month-bar-wrap">
                         <div class="month-bar" style="width:{{ $maxVenta > 0 ? ($mes['total']/$maxVenta*100) : 0 }}%"></div>
                     </div>
-                    <span class="month-value">${{ number_format($mes['total'], 0) }}</span>
+                    <div style="text-align:right;min-width:115px;">
+                        <span class="month-value">${{ number_format($mes['total'], 0) }}</span>
+                        <div style="font-size:0.73rem;color:#106f4e;font-weight:800;margin-top:1px;">Ganancia: ${{ number_format($mes['ganancia'], 0) }}</div>
+                    </div>
                     <span class="month-qty">{{ $mes['cantidad'] }} v.</span>
                 </div>
                 @endforeach

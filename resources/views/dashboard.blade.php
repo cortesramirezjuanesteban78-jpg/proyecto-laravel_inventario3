@@ -55,8 +55,31 @@
     .stat-card.gold { border-left: 4px solid #d97706; }
     .stat-card.gold .sc-icon { background: #fffbeb; border: 1px solid #fef3c7; }
 
+    .stat-card.teal { border-left: 4px solid #0d9488; }
+    .stat-card.teal .sc-icon { background: #f0fdfa; border: 1px solid #ccfbf1; }
+
     .stat-card.coral { border-left: 4px solid #f43f5e; }
     .stat-card.coral .sc-icon { background: #fff1f2; border: 1px solid #fecdd3; }
+
+    .highlight-gain {
+        background: linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%);
+        border: 1.5px solid #86efac;
+        box-shadow: 0 4px 14px rgba(21, 156, 108, 0.12);
+    }
+    .badge-profit {
+        background: #dcfce7;
+        color: #15803d;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 0.2rem 0.55rem;
+        border-radius: 20px;
+        border: 1px solid #bbf7d0;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .text-emerald {
+        color: #0b4e37 !important;
+    }
 
     .stat-card .sc-num {
         font-size: 2.2rem;
@@ -278,8 +301,45 @@
 
 @section('content')
 
-<!-- Stats Cards -->
+<!-- Métricas Financieras y Ganancias -->
+<div class="section-title">Balance Financiero & Rendimiento del Negocio</div>
 <div class="stats-grid">
+    <div class="stat-card emerald highlight-gain">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;">
+            <div class="sc-icon" style="margin-bottom:0;">📈</div>
+            <span class="badge-profit">Ganancia Neta</span>
+        </div>
+        <div class="sc-num text-emerald">${{ number_format($stats['gananciasTotales'], 0) }}</div>
+        <div class="sc-label">Ganancias Totales</div>
+        <div class="sc-sub">Ingresos por ventas menos compras</div>
+        <span class="sc-bg">📈</span>
+    </div>
+    <div class="stat-card blue">
+        <div class="sc-icon">💰</div>
+        <div class="sc-num">${{ number_format($stats['totalVentas'], 0) }}</div>
+        <div class="sc-label">Facturación Total</div>
+        <div class="sc-sub">Monto bruto de ventas</div>
+        <span class="sc-bg">💰</span>
+    </div>
+    <div class="stat-card teal">
+        <div class="sc-icon">🛒</div>
+        <div class="sc-num">${{ number_format($stats['ventasHoy'], 0) }}</div>
+        <div class="sc-label">Ventas del Día</div>
+        <div class="sc-sub">Facturación de hoy</div>
+        <span class="sc-bg">🛒</span>
+    </div>
+    <div class="stat-card gold">
+        <div class="sc-icon">🏗️</div>
+        <div class="sc-num">${{ number_format($stats['valorInventario'], 0) }}</div>
+        <div class="sc-label">Valor en Inventario</div>
+        <div class="sc-sub">Capital en stock disponible</div>
+        <span class="sc-bg">🏗️</span>
+    </div>
+</div>
+
+<!-- Control Operativo & Catálogo -->
+<div class="section-title">Control Operativo & Catálogo</div>
+<div class="stats-grid" style="margin-bottom: 2rem;">
     <div class="stat-card emerald">
         <div class="sc-icon">👥</div>
         <div class="sc-num">{{ $stats['usuarios'] }}</div>

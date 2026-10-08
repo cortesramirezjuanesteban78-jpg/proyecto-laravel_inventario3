@@ -175,55 +175,64 @@
     <!-- Tarjetas Resumen (KPIs) -->
     <table class="kpi-table">
         <tr>
-            <td class="kpi-cell">
-                <div class="kpi-label">Ventas Totales ({{ $year }})</div>
-                <div class="kpi-val text-green">${{ number_format($totalVentas, 2) }}</div>
+            <td class="kpi-cell" style="width: 25%; background: #f0fdf4; border: 1.5px solid #86efac; border-left: 5px solid #106f4e;">
+                <div class="kpi-label" style="color: #106f4e;">Ganancias Netas ({{ $year }})</div>
+                <div class="kpi-val text-green">${{ number_format($ganancias, 2) }}</div>
+                <div style="font-size: 8px; color: #166534; font-weight: bold; margin-top: 2px;">Margen: {{ $margenGanancia }}%</div>
             </td>
-            <td class="kpi-cell blue">
+            <td class="kpi-cell blue" style="width: 25%;">
+                <div class="kpi-label">Ventas Totales</div>
+                <div class="kpi-val">${{ number_format($totalVentas, 2) }}</div>
+            </td>
+            <td class="kpi-cell orange" style="width: 25%;">
                 <div class="kpi-label">Compras a Proveedores</div>
                 <div class="kpi-val">${{ number_format($totalCompras, 2) }}</div>
             </td>
-            <td class="kpi-cell orange">
-                <div class="kpi-label">Catálogo de Productos</div>
-                <div class="kpi-val">{{ $totalProductos }} ítems</div>
-            </td>
-            <td class="kpi-cell red">
+            <td class="kpi-cell red" style="width: 25%;">
                 <div class="kpi-label">Alertas de Stock</div>
                 <div class="kpi-val text-red">{{ $productosStockBajo->count() }} prod.</div>
             </td>
         </tr>
     </table>
 
-    <!-- 1. Desglose Mensual de Ventas -->
-    <div class="section-title">1. Rendimiento Mensual de Ventas ({{ $year }})</div>
+    <!-- 1. Desglose Mensual de Ventas y Rendimiento -->
+    <div class="section-title">1. Rendimiento Mensual de Ventas y Ganancias ({{ $year }})</div>
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 25%;">Mes</th>
-                <th class="text-center" style="width: 25%;">N° Transacciones</th>
-                <th class="text-right" style="width: 25%;">Total Facturado</th>
-                <th class="text-right" style="width: 25%;">Participación</th>
+                <th style="width: 20%;">Mes</th>
+                <th class="text-center" style="width: 15%;">Transacciones</th>
+                <th class="text-right" style="width: 22%;">Ventas Facturadas</th>
+                <th class="text-right" style="width: 20%;">Compras</th>
+                <th class="text-right" style="width: 23%;">Ganancia Neta</th>
             </tr>
         </thead>
         <tbody>
-            @php $acumulado = 0; @endphp
+            @php 
+                $acumVentas = 0; 
+                $acumCompras = 0;
+                $acumGanancias = 0;
+            @endphp
             @foreach($meses as $m)
             @php
-                $pct = $totalVentas > 0 ? ($m['total'] / $totalVentas) * 100 : 0;
-                $acumulado += $m['total'];
+                $acumVentas += $m['total'];
+                $acumCompras += $m['compras'];
+                $acumGanancias += $m['ganancia'];
             @endphp
             <tr>
                 <td class="font-bold">{{ $m['nombre'] }}</td>
                 <td class="text-center">{{ $m['cantidad'] }}</td>
                 <td class="text-right">${{ number_format($m['total'], 2) }}</td>
-                <td class="text-right">{{ number_format($pct, 1) }}%</td>
+                <td class="text-right">${{ number_format($m['compras'], 2) }}</td>
+                <td class="text-right text-green font-bold">${{ number_format($m['ganancia'], 2) }}</td>
             </tr>
             @endforeach
             <tr style="background: #e2e8f0; font-weight: bold;">
                 <td>TOTAL ANUAL</td>
                 <td class="text-center">{{ collect($meses)->sum('cantidad') }}</td>
-                <td class="text-right text-green">${{ number_format($acumulado, 2) }}</td>
-                <td class="text-right">100.0%</td>
+                <td class="text-right text-green">${{ number_format($acumVentas, 2) }}</td>
+                <td class="text-right">${{ number_format($acumCompras, 2) }}</td>
+                <td class="text-right text-green">${{ number_format($acumGanancias, 2) }}</td>
             </tr>
         </tbody>
     </table>

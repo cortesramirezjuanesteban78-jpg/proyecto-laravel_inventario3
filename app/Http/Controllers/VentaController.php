@@ -22,10 +22,13 @@ class VentaController extends Controller
             ->orderBy('id_venta', 'desc')
             ->paginate(15);
 
-        $totalVentas   = Venta::count();
-        $ventasHoy     = Venta::whereDate('fecha_venta', today())->count();
-        $ingresosHoy   = Venta::whereDate('fecha_venta', today())->sum('total');
-        $totalIngresos = Venta::sum('total');
+        $totalVentas   = Venta::where('estado', '!=', 'cancelada')->count();
+        $ventasHoy     = Venta::whereDate('fecha_venta', today())->where('estado', '!=', 'cancelada')->count();
+        $ingresosHoy   = (float) Venta::whereDate('fecha_venta', today())->where('estado', '!=', 'cancelada')->sum('total');
+        $totalIngresos = (float) Venta::where('estado', '!=', 'cancelada')->sum('total');
+        $totalCompras  = (float) (DB::table('compras')->where('estado', '!=', 'cancelada')->sum('total') ?? 0);
+        $ganancias     = $totalIngresos - $totalCompras;
+        $margenGanancia = $totalIngresos > 0 ? round(($ganancias / $totalIngresos) * 100, 1) : 0;
 
         // Sincronizar automáticamente todos los usuarios con rol 'cliente' en la tabla de clientes
         $usuariosClientes = Usuario::where('rol', 'cliente')->get();
@@ -50,6 +53,7 @@ class VentaController extends Controller
 
         return view('ventas.index', compact(
             'ventas', 'totalVentas', 'ventasHoy', 'ingresosHoy', 'totalIngresos',
+            'ganancias', 'margenGanancia',
             'productos', 'clientes'
         ));
     }

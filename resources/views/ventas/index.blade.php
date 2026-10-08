@@ -20,11 +20,17 @@
         background: #fff; font-family: inherit; font-size: .87rem; font-weight: 600; cursor: pointer;
     }
 
-    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.2rem; margin-bottom: 2rem; }
+    .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.1rem; margin-bottom: 2rem; }
+    @media (max-width: 1280px) {
+        .stats-row { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .stats-row { grid-template-columns: 1fr; }
+    }
     .stat-card {
-        border-radius: 16px; padding: 1.3rem 1.5rem; background: #fff;
+        border-radius: 16px; padding: 1.3rem 1.4rem; background: #fff;
         border: 1px solid var(--border-light);
-        box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1rem;
+        box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 0.9rem;
         transition: transform .2s, box-shadow .2s;
     }
     .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
@@ -36,6 +42,27 @@
     .stat-card.teal .sc-icon { background: #f0fdfa; border: 1px solid #ccfbf1; }
     .stat-card.purple { border-left: 4px solid #7c3aed; }
     .stat-card.purple .sc-icon { background: #f5f3ff; border: 1px solid #ede9fe; }
+
+    .stat-card.ganancias-hero {
+        background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%);
+        border: 1.5px solid #86efac;
+        border-left: 5px solid #106f4e;
+        box-shadow: 0 4px 14px rgba(16, 111, 78, 0.12);
+    }
+    .stat-card.ganancias-hero .sc-icon {
+        background: #dcfce7;
+        border: 1px solid #86efac;
+        color: #106f4e;
+    }
+    .badge-margen {
+        background: #106f4e;
+        color: #fff;
+        font-size: .68rem;
+        font-weight: 800;
+        padding: .15rem .45rem;
+        border-radius: 12px;
+        white-space: nowrap;
+    }
 
     .stat-card .sc-icon {
         font-size: 1.6rem; width: 44px; height: 44px; border-radius: 12px;
@@ -693,21 +720,31 @@
 
 {{-- Stats --}}
 <div class="stats-row">
-    <div class="stat-card green">
-        <div class="sc-icon">🛒</div>
-        <div><div class="sc-num">{{ $totalVentas }}</div><div class="sc-label">Total Ventas</div></div>
+    <div class="stat-card ganancias-hero">
+        <div class="sc-icon">📈</div>
+        <div>
+            <div class="sc-num" style="color:#0b4e37;">${{ number_format($ganancias, 0) }}</div>
+            <div class="sc-label" style="display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;">
+                <span>Ganancia Neta</span>
+                <span class="badge-margen">+{{ $margenGanancia }}%</span>
+            </div>
+        </div>
     </div>
-    <div class="stat-card blue">
-        <div class="sc-icon">📅</div>
-        <div><div class="sc-num">{{ $ventasHoy }}</div><div class="sc-label">Ventas Hoy</div></div>
+    <div class="stat-card purple">
+        <div class="sc-icon">💰</div>
+        <div><div class="sc-num">${{ number_format($totalIngresos, 0) }}</div><div class="sc-label">Total Ingresos</div></div>
     </div>
     <div class="stat-card teal">
         <div class="sc-icon">💵</div>
         <div><div class="sc-num">${{ number_format($ingresosHoy, 2) }}</div><div class="sc-label">Ingresos Hoy</div></div>
     </div>
-    <div class="stat-card purple">
-        <div class="sc-icon">💰</div>
-        <div><div class="sc-num">${{ number_format($totalIngresos, 0) }}</div><div class="sc-label">Total Ingresos</div></div>
+    <div class="stat-card blue">
+        <div class="sc-icon">📅</div>
+        <div><div class="sc-num">{{ $ventasHoy }}</div><div class="sc-label">Ventas Hoy</div></div>
+    </div>
+    <div class="stat-card green">
+        <div class="sc-icon">🛒</div>
+        <div><div class="sc-num">{{ $totalVentas }}</div><div class="sc-label">Total Ventas</div></div>
     </div>
 </div>
 

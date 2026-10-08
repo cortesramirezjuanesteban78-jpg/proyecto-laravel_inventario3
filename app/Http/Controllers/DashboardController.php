@@ -16,11 +16,22 @@ class DashboardController extends Controller
         }
 
         if ($rol === 'administrador') {
+            $totalVentas      = (float) DB::table('ventas')->where('estado', '!=', 'cancelada')->sum('total');
+            $totalCompras     = (float) (DB::table('compras')->where('estado', '!=', 'cancelada')->sum('total') ?? 0);
+            $gananciasTotales = $totalVentas - $totalCompras;
+            $ventasHoy        = (float) DB::table('ventas')->whereDate('fecha_venta', today())->where('estado', '!=', 'cancelada')->sum('total');
+            $valorInventario  = (float) (DB::table('productos')->where('estado', 1)->selectRaw('SUM(stock_actual * precio) as val')->value('val') ?? 0);
+
             $stats = [
-                'usuarios'    => DB::table('usuarios')->where('estado', 1)->count(),
-                'productos'   => DB::table('productos')->where('estado', 1)->count(),
-                'categorias'  => DB::table('categorias')->count(),
-                'proveedores' => DB::table('proveedores')->where('estado', 1)->count(),
+                'usuarios'         => DB::table('usuarios')->where('estado', 1)->count(),
+                'productos'        => DB::table('productos')->where('estado', 1)->count(),
+                'categorias'       => DB::table('categorias')->count(),
+                'proveedores'      => DB::table('proveedores')->where('estado', 1)->count(),
+                'totalVentas'      => $totalVentas,
+                'totalCompras'     => $totalCompras,
+                'gananciasTotales' => $gananciasTotales,
+                'ventasHoy'        => $ventasHoy,
+                'valorInventario'  => $valorInventario,
             ];
             $stockBajoCount = DB::table('productos')
                 ->where('estado', 1)

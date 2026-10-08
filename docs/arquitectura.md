@@ -111,26 +111,9 @@ El **Administrador** es la única persona que tiene acceso a la consola de usuar
 ### Pirámide de Accesos del Sistema
 
 A nivel de arquitectura, el sistema aplica tres niveles de aislamiento:
-
-```
-                  ┌───────────────────────────────┐
-                  │       ADMINISTRADOR           │
-                  │  Acceso Total a Todo el       │
-                  │  Sistema y Gestión de Roles   │
-                  └───────────────┬───────────────┘
-                                  │
-                  ┌───────────────┴───────────────┐
-                  │          EMPLEADO             │
-                  │  Operación de Bodega, Stock,  │
-                  │  Inventario y Catálogo        │
-                  └───────────────┬───────────────┘
-                                  │
-                  ┌───────────────┴───────────────┐
-                  │          CLIENTE              │
-                  │  Catálogo Público, Precios    │
-                  │  y Compras en Tienda Virtual  │
-                  └───────────────────────────────┘
-```
+- **Nivel Superior — Administrador:** Acceso total e ilimitado a todo el sistema, gestión de cuentas, asignación de roles, compras y reportes financieros.
+- **Nivel Intermedio — Empleado:** Operación de bodega, control de existencias vivas, catálogo de productos y registro de ventas.
+- **Nivel Externo — Cliente:** Catálogo público de alimentos frescos, consulta de precios y compras en la tienda virtual.
 
 - **El Administrador:** Tiene acceso a todas las pantallas, configuraciones, usuarios, ventas y reportes financieros.
 - **El Empleado:** Solo tiene acceso a los módulos operativos diarios (Catálogo e Inventario). Las pantallas de usuarios, proveedores, reportes ejecutivos y configuración le están completamente bloqueadas.

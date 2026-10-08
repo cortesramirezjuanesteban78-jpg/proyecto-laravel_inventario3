@@ -60,7 +60,8 @@ Son las personas que visitan la tienda virtual para conocer la oferta de aliment
 
 ### Vista para el Administrador
 Al iniciar sesión, el Administrador tiene ante sus ojos una radiografía completa del negocio:
-- **Tarjetas Métricas Principales:** Total de usuarios activos, productos registrados en catálogo, familias de categorías creadas y proveedores comerciales aliados.
+- **Balance Financiero y Ganancias Netas:** Visualización inmediata en tiempo real de las ganancias totales del negocio (calculadas a partir de la facturación de ventas menos las compras a proveedores), la facturación histórica total, las ventas generadas durante la jornada de hoy y la valoración económica total del inventario en almacén.
+- **Control Operativo y Catálogo:** Indicadores clave con el total de usuarios activos, productos disponibles para la venta, familias de categorías creadas y proveedores aliados.
 - **Panel de Urgencia por Stock Crítico:** Si algún producto llegó o bajó de su existencia mínima de seguridad, se despliega una tarjeta de advertencia destacada que muestra el nombre del producto, las unidades que quedan y un botón directo para abastecerlo de inmediato.
 - **Accesos Rápidos a Módulos:** Enlaces directos a la gestión de cuentas, catálogo, inventario, ventas y reportes.
 
@@ -177,14 +178,15 @@ El panel cuenta con tarjetas interactivas y pestañas para ver con un clic:
 ## 10. Reportes Estadísticos y Exportaciones Oficiales
 
 El módulo de Reportes reúne la inteligencia financiera y comercial del negocio por año y mes:
-- **Comportamiento de Ventas:** Comparativa mensual del dinero recaudado para conocer las temporadas de mayor venta.
+- **Panel Ejecutivo de Ganancias Netas:** Presenta en primer plano las ganancias netas del período, el margen porcentual de rentabilidad y el balance entre ingresos por ventas y compras a proveedores.
+- **Comportamiento Mensual de Ventas y Ganancias:** Desglose interactivo mes a mes comparando la facturación recaudada, las compras realizadas y la ganancia neta obtenida en cada mes.
 - **Los Diez Productos Más Vendidos:** Ranking de los alimentos preferidos por los clientes, tanto en volumen de unidades como en ingresos brutos generados.
 - **Balance Consolidado de Stock Crítico:** Lista lista para el departamento de compras con las existencias que deben ordenarse a proveedores.
-- **Gasto Operativo por Proveedor:** Distribución porcentual de compras por cada aliado comercial.
+- **Gasto Operativo por Proveedor:** Distribución de compras e inversión por cada aliado comercial.
 
 ### Opciones de Descarga
-- **Exportación en PDF:** Genera un documento formal con membrete institucional, balance consolidado y diseño listo para imprimir o enviar a la gerencia.
-- **Exportación en Excel:** Descarga una hoja de cálculo limpia y ordenada compatible con Microsoft Excel y Google Sheets para análisis contable avanzado.
+- **Exportación en PDF:** Genera un documento formal con membrete institucional, balance de ganancias netas, desglose mensual y tablas analíticas listas para imprimir o enviar a la gerencia.
+- **Exportación en Excel:** Descarga una hoja de cálculo limpia y ordenada compatible con Microsoft Excel y Google Sheets, incluyendo las métricas de ganancias, márgenes y ventas para análisis contable avanzado.
 
 ---
 
