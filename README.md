@@ -15,7 +15,7 @@
 * 🏗️ **Control de Inventario en Tiempo Real:** Monitoreo dinámico con recarga automática por polling cada 8 segundos y registro detallado de entradas, salidas y mermas.
 * 🛒 **Punto de Venta (POS):** Facturación rápida con selector múltiple de ítems, cálculo automático de importes, diversos métodos de pago y descuento de existencias transaccional.
 * 📦 **Catálogo de Productos:** Clasificación por categorías, proveedores, gestión de precios, control de SKU/código de barras e imágenes locales o remotas.
-* 👥 **Control de Acceso por Roles (RBAC):** Perfiles de `Administrador`, `Empleado` y `Cliente` con navegación personalizada y protección de rutas con middleware.
+* 👥 **Control y Acceso a Todo el Sistema:** Perfiles de `Administrador`, `Empleado` y `Cliente`. Los nuevos registros ingresan como cliente y únicamente el Administrador tiene la facultad de promoverlos a empleado desde el panel de control.
 * 📈 **Módulo de Reportes & Exportación:** Gráficas de ventas anuales, top 10 productos más comercializados y exportación en formato **PDF** y **Excel**.
 
 ---
@@ -80,11 +80,11 @@ Acceso web en: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 Toda la documentación técnica y de usuario se encuentra organizada en el directorio [`docs/`](file:///c:/laragon/www/inventario_laravel/docs/):
 
-1. 📖 [**Manual de Usuario y Operaciones**](file:///c:/laragon/www/inventario_laravel/docs/manual_usuario.md): Guía paso a paso para cajeros, administradores y personal de bodega.
-2. 🗄️ [**Diccionario de Datos y Modelo Relacional**](file:///c:/laragon/www/inventario_laravel/docs/base_de_datos.md): Diagrama ERD en Mermaid y especificación de las 11 tablas del sistema.
-3. 🏛️ [**Arquitectura del Sistema**](file:///c:/laragon/www/inventario_laravel/docs/arquitectura.md): Diagramas de componentes MVC, flujo de datos y decisiones de diseño.
-4. 🎓 [**Conceptos Fundamentales de Laravel**](file:///c:/laragon/www/inventario_laravel/docs/conceptos_laravel.md): Guía didáctica sobre enrutamiento, Eloquent, migraciones y Blade con ejemplos reales del proyecto.
-5. ⚙️ [**Guía de Instalación y Despliegue**](file:///c:/laragon/www/inventario_laravel/docs/guia_instalacion.md): Requisitos de software, setup en Laragon, comandos Artisan y solución de incidencias.
+1. 📖 [**Manual de Usuario y Operaciones**](file:///c:/laragon/www/inventario_laravel/docs/manual_usuario.md): Guía paso a paso en lenguaje claro para cajeros, administradores y personal de bodega.
+2. 🗄️ [**Diccionario de Datos y Modelo de Información**](file:///c:/laragon/www/inventario_laravel/docs/base_de_datos.md): Explicación humana de las entidades, relaciones y reglas del negocio del supermercado.
+3. 🏛️ [**Arquitectura General del Sistema**](file:///c:/laragon/www/inventario_laravel/docs/arquitectura.md): Estructura por capas, flujos de información y modelo de autorización sin enredos técnicos.
+4. 🎓 [**Conceptos Fundamentales de Laravel**](file:///c:/laragon/www/inventario_laravel/docs/conceptos_laravel.md): Guía didáctica y humana sobre el funcionamiento interno de Laravel y control de acceso.
+5. ⚙️ [**Guía Práctica de Instalación y Puesta en Marcha**](file:///c:/laragon/www/inventario_laravel/docs/guia_instalacion.md): Pasos sencillos para desplegar el proyecto en Laragon y resolver incidencias comunes.
 
 ---
 

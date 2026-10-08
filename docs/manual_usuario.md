@@ -1,183 +1,198 @@
 # Manual de Usuario y Guía de Operaciones — SuperFresco
 
-**SuperFresco** es una solución integral de punto de venta (POS), gestión de catálogo, control de inventario en tiempo real y reportes estadísticos para supermercados y tiendas de alimentos frescos y orgánicos.
+Bienvenido al manual operativo de **SuperFresco**. Este documento fue redactado pensando en las personas que día a día interactúan con el supermercado: administradores, cajeros, bodegueros y personal de atención al cliente.
+
+Aquí encontrarás de forma clara, detallada y sin lenguaje técnico enredado cómo utilizar cada herramienta del sistema, desde la recepción de mercancía y el control de existencias, hasta el cobro en caja y la emisión de facturas.
 
 ---
 
-## Índice
+## Índice General
 
 1. [Roles y Permisos del Sistema](#1-roles-y-permisos-del-sistema)
-2. [Inicio de Sesión y Registro](#2-inicio-de-sesión-y-registro)
-3. [Panel de Control (Dashboard)](#3-panel-de-control-dashboard)
-4. [Catálogo de Productos](#4-catálogo-de-productos)
-5. [Control de Inventario y Movimientos](#5-control-de-inventario-y-movimientos)
-6. [Sistema de Alertas de Stock Bajo](#6-sistema-de-alertas-de-stock-bajo)
-7. [Punto de Venta (POS) y Registro de Ventas](#7-punto-de-venta-pos-y-registro-de-ventas)
-8. [Categorías y Proveedores](#8-categorías-y-proveedores)
-9. [Gestión de Usuarios y Cuentas](#9-gestión-de-usuarios-y-cuentas)
-10. [Reportes y Exportación (PDF / Excel)](#10-reportes-y-exportación-pdf--excel)
+2. [Inicio de Sesión y Registro de Usuarios](#2-inicio-de-sesión-y-registro-de-usuarios)
+3. [Tableros de Control (Dashboards)](#3-tableros-de-control-dashboards)
+4. [Gestión del Catálogo de Productos](#4-gestión-del-catálogo-de-productos)
+5. [Control de Inventario y Movimientos de Bodega](#5-control-de-inventario-y-movimientos-de-bodega)
+6. [Sistema Inteligente de Alertas de Stock Bajo](#6-sistema-inteligente-de-alertas-de-stock-bajo)
+7. [Punto de Venta (POS) y Registro de Ventas en Caja](#7-punto-de-venta-pos-y-registro-de-ventas-en-caja)
+8. [Familias de Alimentos y Directorio de Proveedores](#8-familias-de-alimentos-y-directorio-de-proveedores)
+9. [Gestión de Cuentas y Asignación de Roles](#9-gestión-de-cuentas-y-asignación-de-roles)
+10. [Reportes Estadísticos y Exportaciones Oficiales](#10-reportes-estadísticos-y-exportaciones-oficiales)
+11. [Acceso a Todo el Sistema y Seguridad Integral](#11-acceso-a-todo-el-sistema-y-seguridad-integral)
 
 ---
 
 ## 1. Roles y Permisos del Sistema
 
-El sistema cuenta con tres niveles de acceso claramente definidos mediante control de roles:
+Para garantizar el orden y la seguridad en el supermercado, el sistema divide a las personas en tres niveles de acceso claramente definidos:
 
-| Rol | ID Rol | Permisos y Alcance Operativo |
-| :--- | :---: | :--- |
-| **Administrador** | `1` | Acceso irrestricto a todos los módulos: creación de usuarios, gestión de categorías, proveedores, catálogo de productos, control de inventario, registro y cancelación de ventas, y descarga de reportes financieros y auditorías. |
-| **Empleado** | `2` | Operaciones cotidianas de la tienda: consulta de catálogo, edición de precios y existencias, registro de movimientos de inventario (entradas/salidas/mermas) y monitoreo de stock en vivo. |
-| **Cliente** | `3` | Navegación del catálogo público de la tienda, visualización de precios y disponibilidad de productos. |
+### 1. Administrador (Control Total)
+Es la máxima autoridad de la empresa. Tiene acceso ilimitado a absolutamente todos los rincones de la plataforma: puede crear y administrar usuarios, otorgar o revocar roles de empleado, ajustar precios y costos, dar de alta proveedores, supervisar todas las ventas, anular comprobantes y descargar balances financieros en formatos PDF y Excel.
 
----
+### 2. Empleado (Personal Operativo)
+Es el equipo que mantiene en marcha el supermercado en los pasillos, la bodega y las cajas. Puede consultar el catálogo de alimentos, registrar entradas y salidas de mercancía en inventario, vigilar qué productos están por agotarse y cobrar ventas cotidianas. Por seguridad, tiene estrictamente prohibido entrar a la gestión de cuentas de usuarios, modificar roles o alterar configuraciones maestras del negocio.
 
-## 2. Inicio de Sesión y Registro
-
-### 2.1 Acceso al Sistema
-1. Ingresa a la URL: `http://127.0.0.1:8000/login`.
-2. Escribe tu correo electrónico y contraseña.
-3. Haz clic en **"Iniciar Sesión"**. El sistema validará tus credenciales cifradas con Bcrypt y te redirigirá a tu panel correspondiente.
-
-> [!NOTE]
-> **Credenciales por defecto del Administrador:**
-> * **Email:** `admin@superfresco.com`
-> * **Contraseña:** `admin123`
-
-### 2.2 Registro de Nuevos Clientes
-1. Dirígete a `http://127.0.0.1:8000/register` o haz clic en *"¿No tienes cuenta? Regístrate aquí"* desde el formulario de login.
-2. Diligencia tus nombres, apellidos, correo, teléfono y contraseña (mínimo 6 caracteres).
-3. Haz clic en **"Crear Cuenta"**. Automáticamente se te asignará el rol de **Cliente** y se iniciará tu sesión de forma segura.
-4. **Política de Roles:** Todo nuevo usuario registrado inicia exclusivamente como **Cliente**. Únicamente el **Administrador** del sistema puede decidir y asignarle el rol de **Empleado** desde el panel interno de gestión.
+### 3. Cliente (Comprador y Usuario Web)
+Son las personas que visitan la tienda virtual para conocer la oferta de alimentos frescos. Pueden explorar libremente las frutas, vegetales y abarrotes, consultar precios actualizados y preparar sus compras. No tienen acceso a ninguna función administrativa ni operativa interna.
 
 ---
 
-## 3. Panel de Control (Dashboard)
+## 2. Inicio de Sesión y Registro de Usuarios
 
-### 3.1 Vista de Administrador
-Al autenticarte como administrador, visualizarás:
-* **Tarjetas métricas clave:** Total de usuarios activos, productos registrados, categorías creadas y proveedores aliados.
-* **Widget de Alerta de Stock Crítico:** Si existen productos que alcanzaron o están por debajo de su stock mínimo, aparecerá un panel destacado con la lista de productos críticos, su cantidad actual y un botón de acceso directo a inventario.
-* **Accesos Rápidos:** Accesos directos a todos los submódulos de gestión.
+### Cómo Entrar al Sistema
+1. Abre tu navegador de internet y escribe la dirección de inicio de sesión de SuperFresco.
+2. Ingresa tu correo electrónico registrado y tu contraseña personal.
+3. Presiona el botón **"Iniciar Sesión"**.
+4. El sistema verificará tus datos en milisegundos y te conducirá automáticamente al panel que te corresponde según tu rol:
+   - Si eres **Administrador**, verás el Tablero Ejecutivo Completo.
+   - Si eres **Empleado**, verás el Panel Operativo de Bodega e Inventario.
+   - Si eres **Cliente**, serás llevado directamente al Catálogo de Productos y la Tienda Online.
 
-### 3.2 Vista de Empleado
-Diseñado para la agilidad operativa:
-* **Indicadores en vivo:** Productos activos, total de existencias, valor monetario del inventario y productos en alerta.
-* **Herramientas rápidas:** Botones directos a Catálogo e Inventario en vivo.
+### Registro de Nuevas Personas
+1. En la pantalla de acceso, pulsa el enlace para crear una cuenta nueva.
+2. Completa tus datos básicos: nombres, apellidos, correo electrónico, teléfono de contacto y una contraseña segura de al menos seis caracteres.
+3. Presiona **"Crear Cuenta"**.
+4. **Regla de Oro del Sistema:** Toda persona que se registre desde el formulario público entra automáticamente como **Cliente**. Ningún usuario puede auto-asignarse el rol de empleado ni de administrador. Solo el Administrador de la empresa tiene la facultad de decidir si promueve a esa persona al rol de **Empleado**.
 
 ---
 
-## 4. Catálogo de Productos
+## 3. Tableros de Control (Dashboards)
 
-Permite mantener actualizada la oferta comercial de la tienda.
+### Vista para el Administrador
+Al iniciar sesión, el Administrador tiene ante sus ojos una radiografía completa del negocio:
+- **Tarjetas Métricas Principales:** Total de usuarios activos, productos registrados en catálogo, familias de categorías creadas y proveedores comerciales aliados.
+- **Panel de Urgencia por Stock Crítico:** Si algún producto llegó o bajó de su existencia mínima de seguridad, se despliega una tarjeta de advertencia destacada que muestra el nombre del producto, las unidades que quedan y un botón directo para abastecerlo de inmediato.
+- **Accesos Rápidos a Módulos:** Enlaces directos a la gestión de cuentas, catálogo, inventario, ventas y reportes.
 
-### 4.1 Crear un Producto
+### Vista para el Empleado
+Diseñada para agilizar las labores cotidianas sin distracciones:
+- **Indicadores en Tiempo Real:** Total de productos activos en la tienda, existencias globales y valor monetario total del inventario disponible en bodega.
+- **Acceso Rápido al Inventario:** Botones para consultar existencias vivas y registrar movimientos de mercancía al instante.
+
+---
+
+## 4. Gestión del Catálogo de Productos
+
+El catálogo reúne todos los alimentos frescos y abarrotes disponibles para la venta.
+
+### Cómo Dar de Alta un Producto Nuevo
 1. En el menú lateral, selecciona **"Productos"**.
 2. Haz clic en el botón superior **"+ Nuevo Producto"**.
-3. Completa los campos:
-   * **Nombre:** Nombre comercial del producto (ej. *Manzanas Rojas Royal Gala 1kg*).
-   * **Código:** Código de barras o SKU único (ej. *PROD-MANZ-01*).
-   * **Categoría y Proveedor:** Selecciona de las listas desplegables.
-   * **Precio:** Precio de venta al público en pesos.
-   * **Stock Inicial y Stock Mínimo:** Existencias actuales y el umbral mínimo que activará las alertas automáticas.
-   * **Imagen:** Puedes subir un archivo local (JPG, PNG, WebP) o ingresar una URL externa de imagen.
-4. Haz clic en **"Guardar Producto"**.
+3. Diligencia la información solicitada:
+   - **Nombre Comercial:** Nombre claro del artículo (por ejemplo: *Manzana Royal Gala 1kg*).
+   - **Código o Referencia:** Código de barras o identificador único para la caja.
+   - **Categoría y Proveedor:** Selecciona la familia a la que pertenece y la empresa proveedora.
+   - **Precio de Venta:** Valor de venta al público en moneda local.
+   - **Stock Inicial y Stock Mínimo:** Cantidad con la que inicia en bodega y el número de seguridad que activará las alertas preventivas si las existencias bajan demasiado.
+   - **Fotografía:** Puedes subir una foto desde tu computador o ingresar una dirección web de imagen.
+4. Presiona **"Guardar Producto"** y quedará disponible inmediatamente.
 
-### 4.2 Modificar o Inactivar Productos
-* **Editar:** Haz clic en el botón con ícono de lápiz en la fila del producto para actualizar precios, descripción o existencias.
-* **Activar/Inactivar:** Puedes suspender la visibilidad de un producto sin borrar su historial usando el interruptor de estado.
-* **Eliminar:** Solo permitido si el producto no tiene ventas asociadas que comprometan la integridad referencial.
-
----
-
-## 5. Control de Inventario y Movimientos
-
-El módulo **Inventario** (`/inventario`) ofrece sincronización automática en tiempo real sin necesidad de recargar la página.
-
-### 5.1 Niveles de Stock
-Cada fila muestra una barra visual con el nivel de abastecimiento:
-*  **OK (Verde):** Stock holgado por encima del umbral mínimo.
-* ⚠️ **BAJO (Ámbar):** El stock actual es menor o igual al stock mínimo configurado.
-* ❌ **AGOTADO (Rojo):** Existencias en 0 unidades.
-
-### 5.2 Registrar Entradas, Salidas o Ajustes
-1. Localiza el producto en la tabla y presiona el botón **"📦 Mover"**.
-2. En la ventana modal, selecciona el tipo de movimiento:
-   * **📥 Entrada:** Suma unidades recibidas por compra o reposición.
-   * **📤 Salida:** Resta unidades por merma, daño o autoconsumo.
-   * **🔧 Ajuste:** Establece manualmente la cantidad exacta resultante de un conteo físico.
-3. Ingresa la cantidad y una breve observación o justificación.
-4. Presiona **"Registrar"**. El inventario y el historial de auditoría se actualizarán al instante.
+### Modificar o Desactivar Productos
+- **Editar:** Pulsa el botón con el icono de lápiz para cambiar precios, nombres, descripciones o imágenes.
+- **Suspender:** Puedes pausar temporalmente un producto sin borrarlo usando el interruptor de activación. Esto es útil cuando un alimento es de temporada y no estará disponible por unos meses.
+- **Eliminar:** Solo se permite borrar productos que no tengan ventas registradas en el historial para proteger la contabilidad.
 
 ---
 
-## 6. Sistema de Alertas de Stock Bajo
+## 5. Control de Inventario y Movimientos de Bodega
 
-Para prevenir el desabastecimiento, la plataforma cuenta con alertas automáticas interactivas:
+El módulo de Inventario te permite saber con total certeza qué hay en bodega en este instante sin tener que hacer conteos a ciegas.
 
-1. **Insignia en el menú lateral:** Aparece un contador animado `⚠️ [X]` junto a la pestaña *Inventario* visible en todas las pantallas.
-2. **Botón superior en cabecera:** Notifica cuántos productos están en alerta con acceso inmediato.
-3. **Banner Global de Advertencia:** Un banner informativo superior con etiquetas que indican los nombres y cantidades restantes de los productos más urgentes.
-4. **Filtro rápido en Inventario:** Botón **"⚠️ Ver solo stock bajo"** que oculta los productos en estado óptimo y muestra exclusivamente los que requieren reposición.
-5. **Avisos automáticos en Ventas y Movimientos:** Si una transacción provoca que un producto quede en stock bajo o se agote, el sistema emitirá una notificación de advertencia preventiva.
-
----
-
-## 7. Punto de Venta (POS) y Registro de Ventas
-
-Ruta: `/ventas` *(Exclusivo administradores y cajeros autorizados)*.
-
-### 7.1 Pasos para Registrar una Venta
-1. Haz clic en **"+ Nueva Venta"**.
-2. **Seleccionar Productos:** Escoge los productos del desplegable. El sistema mostrará su precio, stock actual y alertará con `[⚠️ Stock bajo]` si está por agotarse.
-3. **Cantidades:** Define las unidades a vender. Puedes presionar **"+ Agregar producto"** para ventas de múltiples ítems.
-4. **Cliente:** Selecciona un cliente registrado o déjalo en *Público General*.
-5. **Método de Pago:** Selecciona Efectivo, Tarjeta o Transferencia bancaria.
-6. Haz clic en **"Registrar Venta"**.
-   * El sistema descuenta automáticamente el stock en la base de datos.
-   * Registra el movimiento de salida en la auditoría de inventario.
-   * Muestra un resumen del total cobrado y advierte si algún producto quedó en nivel crítico.
+### Cómo Registrar Entradas, Salidas y Ajustes
+1. Ubica el producto deseado en la tabla de inventario y pulsa el botón **"Mover"**.
+2. En la ventana emergente, escoge el tipo de operación:
+   - **Entrada:** Se usa cuando llega un camión de reposición o una compra a un proveedor. Suma unidades al stock.
+   - **Salida:** Se usa para registrar mermas, frutas en mal estado, productos vencidos o roturas. Resta unidades del stock.
+   - **Ajuste:** Se usa tras un conteo físico para fijar manualmente el número real si hubo algún descuadre.
+3. Escribe la cantidad de unidades y una justificación breve para la auditoría (por ejemplo: *Reposición de mercancía según factura de proveedor*).
+4. Pulsa **"Registrar"**. El inventario se actualiza en ese mismo segundo.
 
 ---
 
-## 8. Categorías y Proveedores
+## 6. Sistema Inteligente de Alertas de Stock Bajo
 
-### 8.1 Categorías (`/categorias`)
-Organiza el catálogo en familias de alimentos (ej. *Frutas y Verduras*, *Lácteos*, *Panadería*, *Abarrotes*).
-* Permite crear, renombrar y clasificar los productos para agilizar los filtros y los reportes de rendimiento.
+Para que el supermercado nunca se quede sin productos estrella, el sistema avisa constantemente sobre existencias críticas:
 
-### 8.2 Proveedores (`/proveedores`)
-Directorio de empresas y aliados comerciales que surten la tienda:
-* Permite registrar nombre de la empresa, contacto, teléfono, correo y dirección física.
-* Facilita el seguimiento de órdenes de compra y la emisión de reportes de compras por proveedor.
+- **Indicador Permanente en el Menú Lateral:** Aparece una insignia llamativa con el número exacto de productos en riesgo.
+- **Banner de Alerta Superior:** Un mensaje en la parte alta de la pantalla lista los artículos más urgentes por reabastecer.
+- **Filtro Rápido en Inventario:** Un botón exclusivo para ver únicamente los productos que requieren compra urgente, ocultando los que tienen stock suficiente.
+- **Advertencias en Caja:** Si al cobrar una venta un producto queda por debajo de su límite de seguridad o se agota, el sistema emite una alerta preventiva para que el cajero informe al área de compras.
 
 ---
 
-## 9. Gestión de Usuarios y Roles
+## 7. Punto de Venta (POS) y Registro de Ventas en Caja
 
-Ruta: `/usuarios` *(Solo Administrador)*.
+El módulo de Ventas está optimizado para cobrar rápido y con precisión en la línea de cajas.
 
-* **Control Centralizado de Roles:** El Administrador es la única persona autorizada para gestionar y cambiar los roles del sistema.
-* **Asignación Rápida de Rol de Empleado:**
-  - Cuando una persona se registra en la tienda web, ingresa automáticamente como **Cliente**.
-  - El Administrador puede ingresar a `/usuarios`, revisar los clientes registrados y pulsar **"💼 Hacer Empleado"** para otorgarle acceso operativo inmediatamente al inventario y catálogo.
-  - De igual forma, si un empleado finaliza labores, el Administrador puede presionar **"🧑‍💼 Pasar a Cliente"** para revocar sus permisos operativos sin eliminar sus registros históricos.
-* **Filtros por Perfil:** Pestañas directas para visualizar Todos, Clientes, Empleados o Administradores, junto con métricas en tiempo real.
-* **Creación de Cuentas Internas:** Crear perfiles directamente con rol de *Empleado*, *Cliente* o *Administrador*.
-* **Cambio de Contraseña y Datos:** Permite actualizar nombres, teléfonos, correos y contraseñas.
-* **Activación y Bloqueo:** El botón de alternar estado permite revocar el acceso a empleados que ya no laboren en la empresa sin eliminar sus registros históricos.
+### Cómo Registrar una Venta
+1. Haz clic en el botón **"+ Nueva Venta"** para abrir el punto de cobro.
+2. **Seleccionar Artículos:** Escoge los productos comprados por el cliente. El sistema muestra su precio, el stock actual y advierte si quedan pocas unidades.
+3. **Definir Cantidades:** Usa los botones de aumento o escribe la cantidad directamente. Si el cliente lleva varios productos diferentes, pulsa **"+ Agregar otro producto"**.
+4. **Seleccionar el Cliente:** Aquí puedes elegir entre dos opciones:
+   - **Público General:** Para ventas rápidas de mostrador donde no se solicitan datos del comprador.
+   - **Cliente Registrado del Sistema:** El selector lista con nombre, correo y teléfono a todos los clientes dados de alta en la plataforma, permitiendo asociar la compra a su cuenta oficial.
+5. **Forma de Pago:** Selecciona si el pago se realiza en Efectivo, Tarjeta de Débito/Crédito o Transferencia Bancaria.
+6. Pulsa **"Registrar Venta"**.
+7. En ese instante, el sistema:
+   - Descuenta las unidades vendidas de la bodega automáticamente.
+   - Registra la salida en el libro de auditoría de inventario.
+   - Genera de inmediato el comprobante oficial de venta.
+   - Te permite imprimir la factura en papel o descargarla en formato digital PDF.
 
 ---
 
-## 10. Reportes y Exportación (PDF / Excel)
+## 8. Familias de Alimentos y Directorio de Proveedores
 
-Ruta: `/reportes`.
+### Familias de Categorías
+Permite ordenar los productos por grupos lógicos (Frutas y Verduras, Lácteos, Panadería, Carnes y Abarrotes). Ayuda a que los clientes encuentren rápido lo que buscan y permite generar reportes de ventas por departamento.
 
-El módulo de inteligencia de negocios compila estadísticas completas por año:
-* **Ventas mensuales:** Gráfica comparativa mes a mes del total recaudado.
-* **Top 10 Productos Más Vendidos:** Ranking por volumen de unidades y por ingresos generados.
-* **Productos con Stock Crítico:** Listado consolidado para compras.
-* **Compras por Proveedor:** Distribución del gasto operativo por proveedor.
+### Directorio de Proveedores
+Conserva la agenda comercial de las empresas aliadas:
+- Nombre de la empresa o razón social.
+- Persona de contacto directo.
+- Teléfono móvil, correo electrónico corporativo y dirección de entrega.
 
-### Exportaciones Disponibles:
-* **Exportar a PDF:** Genera un documento formal maquetado con encabezado institucional, tablas formateadas y métricas listo para imprimir o enviar a gerencia.
-* **Exportar a Excel:** Descarga un archivo compatible con Microsoft Excel y Google Sheets para análisis de datos avanzado.
+---
+
+## 9. Gestión de Cuentas y Asignación de Roles
+
+Este módulo es de **acceso exclusivo para el Administrador** y se encuentra en la opción de Usuarios.
+
+### Cómo Decidir Quién es Empleado
+- Cuando una persona nueva se registra en la página web, entra automáticamente al sistema con el rol de **Cliente**.
+- El Administrador entra al módulo de usuarios y encuentra a las personas recién registradas en los primeros lugares de la lista.
+- Si esa persona forma parte del equipo de trabajo de la tienda, el Administrador solo debe pulsar el botón **"Hacer Empleado"**.
+- En ese mismo instante, el usuario adquiere los permisos operativos de inventario y catálogo.
+- Si un trabajador finaliza su contrato o pasa a ser cliente habitual, el Administrador presiona **"Pasar a Cliente"** para revocar sus permisos internos sin borrar sus registros históricos.
+
+### Filtros Rápidos de Usuarios
+El panel cuenta con tarjetas interactivas y pestañas para ver con un clic:
+- **Todos los Usuarios:** El padrón completo de cuentas.
+- **Solo Clientes:** Para evaluar nuevos registros y decidir promociones a empleados.
+- **Solo Empleados:** Para supervisar al personal operativo activo.
+- **Solo Administradores:** Las cuentas con llaves maestras del sistema.
+
+---
+
+## 10. Reportes Estadísticos y Exportaciones Oficiales
+
+El módulo de Reportes reúne la inteligencia financiera y comercial del negocio por año y mes:
+- **Comportamiento de Ventas:** Comparativa mensual del dinero recaudado para conocer las temporadas de mayor venta.
+- **Los Diez Productos Más Vendidos:** Ranking de los alimentos preferidos por los clientes, tanto en volumen de unidades como en ingresos brutos generados.
+- **Balance Consolidado de Stock Crítico:** Lista lista para el departamento de compras con las existencias que deben ordenarse a proveedores.
+- **Gasto Operativo por Proveedor:** Distribución porcentual de compras por cada aliado comercial.
+
+### Opciones de Descarga
+- **Exportación en PDF:** Genera un documento formal con membrete institucional, balance consolidado y diseño listo para imprimir o enviar a la gerencia.
+- **Exportación en Excel:** Descarga una hoja de cálculo limpia y ordenada compatible con Microsoft Excel y Google Sheets para análisis contable avanzado.
+
+---
+
+## 11. Acceso a Todo el Sistema y Seguridad Integral
+
+La plataforma SuperFresco fue diseñada para proteger la información del supermercado sin entorpecer el trabajo diario:
+
+- **Acceso a Todo el Sistema Reservado para el Administrador:** Ningún otro perfil puede ingresar a los módulos de auditoría, usuarios, proveedores o configuración general.
+- **Protección contra Intentos de Acceso No Autorizado:** Si un cliente o empleado intenta ingresar manualmente a una pantalla prohibida, el sistema bloquea su paso al instante y le muestra un aviso de acceso denegado.
+- **Contraseñas Cifradas:** Las claves de acceso viajan y se guardan con algoritmos matemáticos de máxima seguridad. Nadie en la empresa puede ver la contraseña de otra persona.
+- **Desactivación Rápida:** Si se extravía un dispositivo o se retira un colaborador, la cuenta se puede suspender en un clic, impidiendo que vuelva a ingresar sin necesidad de borrar información histórica.

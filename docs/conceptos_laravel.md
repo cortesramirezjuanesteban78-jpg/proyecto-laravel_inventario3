@@ -1,376 +1,208 @@
-# Guía de Conceptos Fundamentales de Laravel — SuperFresco
+# Guía Explicativa del Sistema y Fundamentos de Laravel — SuperFresco
 
-Este documento explica de forma didáctica, técnica y práctica los conceptos centrales del framework **Laravel** implementados en el proyecto **SuperFresco**. Cada sección incluye explicaciones claras y ejemplos con el código real del proyecto.
+Este documento recopila, con un lenguaje claro, humano y comprensible para cualquier persona, cómo funciona por dentro el sistema de **SuperFresco** y cuáles son los pilares conceptuales sobre los cuales fue construido utilizando el entorno de **Laravel**.
 
----
-
-## Índice
-
-1. [El Patrón Arquitectónico MVC](#1-el-patrón-arquitectónico-mvc)
-2. [Ciclo de Vida de una Petición (Request Lifecycle)](#2-ciclo-de-vida-de-una-petición-request-lifecycle)
-3. [Enrutamiento (Routing)](#3-enrutamiento-routing)
-4. [Middlewares (Filtros HTTP)](#4-middlewares-filtros-http)
-5. [Controladores (Controllers)](#5-controladores-controllers)
-6. [Modelos y Eloquent ORM](#6-modelos-y-eloquent-orm)
-7. [Motor de Plantillas Blade](#7-motor-de-plantillas-blade)
-8. [Migraciones y Esquema de Base de Datos](#8-migraciones-y-esquema-de-base-de-datos)
-9. [Autenticación, Sesiones y Seguridad](#9-autenticación-sesiones-y-seguridad)
-10. [Gestión de Carga de Archivos (File Uploads)](#10-gestión-de-carga-de-archivos-file-uploads)
-11. [Variables de Entorno y Configuración (.env)](#11-variables-de-entorno-y-configuración-env)
+Aquí no encontrarás líneas de código técnico ni fragmentos de programación difíciles de leer. El objetivo es que cualquier integrante del equipo, cliente o evaluador entienda cómo viaja la información, cómo se protegen los datos y cómo opera cada parte del supermercado digital.
 
 ---
 
-## 1. El Patrón Arquitectónico MVC
+## Índice Temático
 
-Laravel estructura las aplicaciones utilizando el patrón **Modelo - Vista - Controlador (MVC)**:
-
-- **Modelo (Model)**: Representa los datos y la lógica de negocio. Interactúa con la base de datos mediante Eloquent ORM. *(Ubicación: `app/Models/`)*.
-- **Vista (View)**: La interfaz visual que ve el usuario final. En Laravel se construyen con plantillas Blade. *(Ubicación: `resources/views/`)*.
-- **Controlador (Controller)**: Actúa como el intermediario. Recibe la petición del usuario, consulta o actualiza los Modelos, y envía los datos necesarios a la Vista. *(Ubicación: `app/Http/Controllers/`)*.
-
-```mermaid
-flowchart LR
-    User([Usuario / Navegador]) -->|Petición HTTP| Router[Router / web.php]
-    Router --> Controller[Controlador]
-    Controller -->|Consulta / Guarda| Model[Modelo Eloquent]
-    Model <-->|SQL| DB[(Base de Datos MySQL)]
-    Controller -->|Envía datos procesados| View[Vista Blade]
-    View -->|Renderiza HTML| User
-```
+1. [El Patrón Arquitectónico MVC (Modelo - Vista - Controlador)](#1-el-patrón-arquitectónico-mvc-modelo---vista---controlador)
+2. [El Viaje de una Solicitud (Ciclo de Vida de una Petición)](#2-el-viaje-de-una-solicitud-ciclo-de-vida-de-una-petición)
+3. [Direcciones y Rutas del Sistema](#3-direcciones-y-rutas-del-sistema)
+4. [Los Porteros de Seguridad (Filtros del Sistema)](#4-los-porteros-de-seguridad-filtros-del-sistema)
+5. [Los Controladores: Coordinadores del Negocio](#5-los-controladores-coordinadores-del-negocio)
+6. [La Representación de la Información (Modelos de Datos)](#6-la-representación-de-la-información-modelos-de-datos)
+7. [La Presentación Visual y Pantallas Reutilizables](#7-la-presentación-visual-y-pantallas-reutilizables)
+8. [Organización y Orden de la Base de Datos](#8-organización-y-orden-de-la-base-de-datos)
+9. [Seguridad, Cuidado de Contraseñas y Privacidad](#9-seguridad-cuidado-de-contraseñas-y-privacidad)
+10. [Manejo de Fotos y Archivos de Productos](#10-manejo-de-fotos-y-archivos-de-productos)
+11. [Ajustes y Parámetros del Entorno](#11-ajustes-y-parámetros-del-entorno)
+12. [Acceso a Todo el Sistema y Control de Roles](#12-acceso-a-todo-el-sistema-y-control-de-roles)
 
 ---
 
-## 2. Ciclo de Vida de una Petición (Request Lifecycle)
+## 1. El Patrón Arquitectónico MVC (Modelo - Vista - Controlador)
 
-Cada vez que un usuario interactúa con la aplicación en `http://127.0.0.1:8000`:
+Para que un sistema grande y complejo no se vuelva un desorden con el paso del tiempo, se divide en tres responsabilidades muy bien diferenciadas. La mejor forma de entenderlo es imaginarse el funcionamiento de un buen restaurante:
 
-1. **Punto de Entrada (`public/index.php`)**: Toda solicitud entra por este archivo único.
-2. **Carga del Autoloader y Bootstrap (`bootstrap/app.php`)**: Registra las dependencias de Composer y enciende las instancias del framework.
-3. **HTTP Kernel & Middlewares**: Valida cookies de sesión, comprueba tokens CSRF y verifica autenticación.
-4. **Enrutamiento (`routes/web.php`)**: Determina qué controlador y método debe procesar la URL.
-5. **Controlador**: Ejecuta la lógica y retorna una respuesta (HTML, JSON o Redirección).
-6. **Respuesta al Cliente**: El navegador recibe el HTML resultante con código de estado HTTP (`200 OK`, `302 Redirect`, etc.).
+- **La Vista (La Mesa y el Plato Servido):** Es todo lo que el usuario ve directamente en su pantalla: los colores, botones, listas de productos, alertas visuales y formularios. No toma decisiones de negocio por su cuenta; su única labor es mostrar los resultados de forma ordenada y atractiva.
+- **El Controlador (El Mesero):** Es quien recibe al cliente. Cuando tú pulsas un botón o llenas un formulario, el controlador toma tu solicitud, verifica que tus datos estén completos y correctos, le pide la información necesaria a la cocina y luego te devuelve la pantalla lista.
+- **El Modelo (La Cocina y la Despensa):** Conoce las reglas del supermercado y sabe cómo buscar, guardar y calcular la información en la base de datos. Si se necesita saber el precio con impuesto de una manzana o cuántas cajas de fresas quedan en bodega, el modelo es quien hace las cuentas y entrega el resultado exacto.
 
----
-
-## 3. Enrutamiento (Routing)
-
-Las rutas se definen en el archivo `routes/web.php`. Mapean URLs a funciones anónimas o a métodos de un controlador.
-
-### Métodos HTTP Disponibles
-- `Route::get($uri, $callback)`: Obtener y mostrar datos (ej. cargar una página).
-- `Route::post($uri, $callback)`: Enviar y guardar datos nuevos (ej. crear producto).
-- `Route::put($uri, $callback)`: Actualizar un registro completo existente.
-- `Route::delete($uri, $callback)`: Eliminar un registro.
-
-### Rutas con Recursos (`Route::resource`)
-Crea automáticamente las 7 rutas RESTful estándar (`index`, `create`, `store`, `show`, `edit`, `update`, `destroy`):
-
-```php
-// Ejemplo en routes/web.php
-Route::resource('productos', ProductoController::class)->except(['show']);
-```
-
-### Rutas Nombradas (Named Routes)
-Asignar un nombre a una ruta permite enlazarla fácilmente en las vistas sin depender de URLs fijas:
-
-```php
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-```
-*En Blade se invoca con:* `route('login')` ➔ Genera automáticamente `http://127.0.0.1:8000/login`.
+Gracias a esta separación, si se desea rediseñar la apariencia de la tienda, no se corre el riesgo de alterar los cálculos del dinero ni el inventario de la bodega.
 
 ---
 
-## 4. Middlewares (Filtros HTTP)
+## 2. El Viaje de una Solicitud (Ciclo de Vida de una Petición)
 
-Los middlewares actúan como **capas de seguridad o filtros** que inspeccionan la petición antes de que llegue al controlador:
+Cada vez que una persona da clic en un enlace o abre la página web en su navegador, ocurre una secuencia ordenada en cuestión de milésimas de segundo:
 
-```mermaid
-flowchart LR
-    Req[Petición del Usuario] --> M1[Middleware CSRF]
-    M1 --> M2[Middleware Auth]
-    M2 -->|¿Está logueado? SÍ| Ctrl[Controlador]
-    M2 -->|NO| Redir[Redirige a /login]
-```
-
-### Middlewares Usados en el Proyecto:
-
-1. **`guest`**: Solo permite acceso a usuarios **no autenticados**. Si ya iniciaste sesión y entras a `/login`, te redirige al `/dashboard`.
-   ```php
-   Route::middleware('guest')->group(function () {
-       Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-   });
-   ```
-2. **`auth`**: Exige que el usuario haya iniciado sesión obligatoriamente. Si no tiene sesión activa, lo expulsa a `/login`.
-   ```php
-   Route::middleware('auth')->group(function () {
-       Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-       Route::resource('productos', ProductoController::class);
-   });
-   ```
+1. **Recepción Principal:** La solicitud toca la puerta de entrada oficial del servidor.
+2. **Preparación y Arranque:** El sistema enciende sus motores internos, lee la configuración del supermercado y carga las herramientas de trabajo.
+3. **Revisión de Seguridad:** Los filtros de protección verifican que la conexión sea auténtica, comprueban si la persona ya inició sesión y validan que no se trate de un intento de fraude.
+4. **Guía de Direcciones:** El mapa de rutas identifica exactamente qué pantalla o acción solicitó la persona (por ejemplo: ver el inventario, guardar una venta o consultar usuarios).
+5. **Procesamiento de la Operación:** El coordinador correspondiente busca los datos en la base de datos, valida que los precios y existencias sean consistentes y prepara la respuesta.
+6. **Entrega Visual:** El sistema dibuja la pantalla final con la información actualizada y se la muestra al usuario en su navegador.
 
 ---
 
-## 5. Controladores (Controllers)
+## 3. Direcciones y Rutas del Sistema
 
-Un controlador agrupa la lógica de manejo de peticiones para una entidad específica.
+Para que cada botón y cada pantalla funcionen, el sistema cuenta con un mapa central de navegación donde cada dirección tiene un propósito claro.
 
-### Inyección de Dependencias y Validación de Formularios
-Laravel permite inyectar automáticamente la clase `Request` para acceder a los datos enviados por el usuario:
+Existen distintas formas de comunicarse con el sistema dependiendo de lo que se desee hacer:
 
-```php
-// Ejemplo de app/Http/Controllers/ProductoController.php
-public function store(Request $r)
-{
-    // Validación automática: Si falla, Laravel regresa con los errores
-    $r->validate([
-        'nombre'         => 'required|string|max:150',
-        'codigo'         => 'required|string|max:50|unique:productos,codigo',
-        'precio'         => 'required|numeric|min:0',
-        'imagen_archivo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-    ]);
+- **Consultas y Visualización:** Cuando solo se desea leer información sin modificar nada, como abrir el catálogo de productos o ver el tablero principal.
+- **Nuevos Registros:** Cuando se envía un formulario con datos nuevos para que queden guardados permanentemente, como registrar un nuevo usuario o guardar una venta en caja.
+- **Modificaciones:** Cuando se corrige o actualiza un registro que ya existía, como cambiarle el precio a un producto o actualizar el teléfono de un proveedor.
+- **Eliminaciones:** Cuando se solicita retirar formalmente un elemento del sistema.
 
-    // Crear registro
-    Producto::create($data);
-
-    // Redirección con mensaje flash en sesión
-    return redirect()->route('productos.index')
-        ->with('success', 'Producto creado correctamente.');
-}
-```
-
-> [!TIP]
-> Los mensajes enviados con `with('success', '...')` son datos "flash" que solo viven durante la siguiente petición HTTP y se borran automáticamente tras mostrarse en pantalla.
+Cada una de estas acciones tiene su camino exclusivo para garantizar que nada se guarde o se borre por error.
 
 ---
 
-## 6. Modelos y Eloquent ORM
+## 4. Los Porteros de Seguridad (Filtros del Sistema)
 
-**Eloquent** es el mapeador objeto-relacional (ORM) de Laravel. Cada tabla de la base de datos se representa con una clase PHP (Modelo). En lugar de escribir sentencias SQL manuales como `SELECT * FROM productos`, se utiliza código orientado a objetos.
+Imagina un edificio corporativo con guardias de seguridad en la entrada principal. Los filtros del sistema actúan exactamente de esa forma: vigilan cada petición antes de dejarla pasar al interior.
 
-### Configuración del Modelo (`app/Models/Producto.php`)
+Entre sus funciones más importantes se encuentran:
 
-```php
-namespace App\Models;
-use Illuminate\Database\Eloquent\Model;
-
-class Producto extends Model {
-    protected $table = 'productos';              // Tabla asociada en MySQL
-    protected $primaryKey = 'id_producto';        // Llave primaria personalizada
-    public $timestamps = false;                  // Desactiva created_at y updated_at automáticos
-    
-    // Campos permitidos para inserción masiva (Mass Assignment)
-    protected $fillable = [
-        'id_categoria', 'id_proveedor', 'codigo', 'nombre',
-        'descripcion', 'precio', 'stock_actual', 'stock_minimo',
-        'imagen', 'estado'
-    ];
-}
-```
-
-### Relaciones entre Modelos
-
-1. **`belongsTo` (Muchos a Uno)**:
-   Un producto pertenece a una categoría y a un proveedor:
-   ```php
-   public function categoria() {
-       return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
-   }
-   ```
-   *Uso:* `$producto->categoria->nombre`
-
-2. **`hasMany` (Uno a Muchos)**:
-   Un producto puede tener muchos detalles de ventas:
-   ```php
-   public function detalleVentas() {
-       return $this->hasMany(DetalleVenta::class, 'id_producto', 'id_producto');
-   }
-   ```
-
-### Accesores (Accessors)
-Permiten transformar o formatear el valor de un atributo cuando se lee del modelo:
-
-```php
-// Accesor para imagen_url en Producto.php
-public function getImagenUrlAttribute()
-{
-    if (empty($this->imagen)) {
-        return 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&q=70';
-    }
-
-    if (str_starts_with($this->imagen, 'http://') || str_starts_with($this->imagen, 'https://')) {
-        return $this->imagen;
-    }
-
-    return asset($this->imagen);
-}
-```
-*En cualquier vista o controlador:* `$producto->imagen_url` devuelve automáticamente la URL completa y funcional.
-
-### Eager Loading (Carga Ansiosa con `with`)
-Previene el problema de rendimiento **N+1** en bases de datos cargando las relaciones en una sola consulta optimizada:
-
-```php
-// En lugar de hacer una consulta SQL por cada producto:
-$productos = Producto::with(['categoria', 'proveedor'])->paginate(12);
-```
+- **Filtro de Invitados:** Si alguien ya tiene su sesión abierta e intenta volver a la pantalla de inicio de sesión, el sistema detecta que ya está adentro y lo conduce de inmediato a su panel de trabajo.
+- **Filtro de Usuarios Registrados:** Si una persona intenta entrar directamente a una dirección interna sin haber ingresado su correo y clave, el guardia lo detiene y lo envía a la pantalla de acceso.
+- **Escudo contra Suplantación:** Cada vez que se envía un formulario, el sistema exige un sello digital invisible único por sesión. Si un sitio web malicioso intenta engañar a tu navegador para realizar una compra o un cambio no autorizado en tu nombre, el filtro rechaza la operación automáticamente.
 
 ---
 
-## 7. Motor de Plantillas Blade
+## 5. Los Controladores: Coordinadores del Negocio
 
-Blade es el motor de vistas de Laravel. Los archivos terminan en `.blade.php`.
+Los controladores son los directores de orquesta del sistema. Su trabajo principal consiste en coordinar lo que el usuario pide con lo que la base de datos debe entregar.
 
-### Herencia de Plantillas (Layouts)
-Permite reutilizar estructuras HTML completas (barra de navegación, sidebar, estilos, footer) sin duplicar código:
+Sus tareas fundamentales son:
 
-```blade
-{{-- layouts/sidebar.blade.php define la estructura maestra --}}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>@yield('title', 'SuperFresco')</title>
-    @stack('styles')
-</head>
-<body>
-    <aside class="sidebar"> ... </aside>
-    <main class="main-content">
-        @yield('content')
-    </main>
-    @stack('scripts')
-</body>
-</html>
-```
+- **Validar la Información:** Antes de guardar cualquier cosa, revisan minuciosamente cada dato. Por ejemplo, verifican que el precio de un producto no sea negativo, que un correo electrónico tenga un formato válido y no esté repetido, o que las contraseñas coincidan. Si algo no cumple las reglas, le explican con amabilidad al usuario qué debe corregir antes de continuar.
+- **Mensajes Instantáneos de Confirmación:** Cuando una acción se completa con éxito (por ejemplo, guardar una venta o actualizar un stock), el controlador deja una nota visual temporal en pantalla felicitando al usuario o confirmando el éxito de la operación, la cual desaparece sola al cambiar de página.
+- **Manejo de Errores Amigables:** Si ocurre algún inconveniente, el sistema evita mostrar mensajes confusos o pantallas rotas y en su lugar entrega una orientación clara sobre lo ocurrido.
 
-*Una vista hija (como `productos/index.blade.php`) solo extiende el layout:*
-```blade
-@extends('layouts.sidebar')
+---
 
-@section('title', 'Catálogo de Productos')
+## 6. La Representación de la Información (Modelos de Datos)
 
-@section('content')
-    <h1>Gestión de Productos</h1>
-    {{-- Contenido específico aquí --}}
-@endsection
-```
+En lugar de ver los datos como números y filas frías en una tabla, el sistema trata cada concepto como un objeto real del negocio con personalidad y reglas propias.
 
-### Directivas Principales de Blade
+En SuperFresco existen modelos para:
+- **Productos:** Saben cuál es su stock actual, su stock mínimo de alerta, su precio y su categoría.
+- **Categorías:** Agrupan familias de alimentos frescos como frutas, verduras, lácteos y carnes.
+- **Proveedores:** Guardan la información de contacto y abastecimiento de los productos.
+- **Ventas y Facturas:** Guardan el detalle de los productos comprados, el total calculado, el método de pago y el cliente asociado.
+- **Usuarios y Roles:** Identifican quién está operando el sistema y qué permisos tiene.
 
-| Directiva | Propósito | Ejemplo |
+### Conexiones Inteligentes entre Elementos
+Los modelos están conectados de forma natural, igual que en la vida real:
+- Cada producto sabe a qué categoría pertenece y quién es su proveedor.
+- Cada venta conoce qué cajero la atendió y a qué cliente fue emitida.
+- Cuando se registra una salida de producto, el inventario descuenta automáticamente las unidades sin requerir cálculos manuales.
+
+---
+
+## 7. La Presentación Visual y Pantallas Reutilizables
+
+Para ofrecer una experiencia de usuario agradable, profesional y coherente en todo momento, la interfaz visual se construye a partir de un diseño maestro compartido.
+
+- **Estructura Base Centralizada:** La barra lateral de navegación, el logotipo institucional, el menú de módulos y los estilos generales se diseñan una sola vez. Todas las pantallas secundarias adoptan esta estructura automáticamente.
+- **Protección Automática en Textos:** Todo dato que ingresa un usuario y se muestra en pantalla es limpiado y protegido para evitar que se puedan inyectar textos dañinos en los navegadores.
+- **Diseño Adaptable:** Cada pantalla está organizada con tarjetas informativas, tablas con búsqueda interactiva, botones con iconos intuitivos y colores corporativos (verdes esmeralda, azules y dorados) que facilitan el trabajo diario del personal.
+
+---
+
+## 8. Organización y Orden de la Base de Datos
+
+Para que la información del supermercado esté siempre disponible, consistente y segura, la base de datos se crea y evoluciona a través de un esquema estructurado y controlado.
+
+Esto garantiza que:
+- Las tablas de usuarios, clientes, productos, categorías, inventario y facturación se construyan siempre con las mismas reglas en cualquier computador donde se instale el sistema.
+- Los datos estén estrictamente relacionados: no es posible vender un producto que no existe en el catálogo, ni asociar una factura a un usuario inventado.
+- Si en el futuro el supermercado necesita agregar una nueva función (como un sistema de puntos de fidelidad o domicilios), la estructura se puede ampliar ordenadamente sin borrar los datos históricos ya existentes.
+
+---
+
+## 9. Seguridad, Cuidado de Contraseñas y Privacidad
+
+La privacidad y la seguridad de los usuarios son una prioridad absoluta en el diseño de SuperFresco:
+
+- **Cifrado Fuerte de Contraseñas:** Las contraseñas nunca se almacenan tal como el usuario las escribe. Antes de guardarse, pasan por un algoritmo matemático avanzado de encriptación que las transforma en una cadena irreversible de caracteres seguros. Ni los administradores ni los operadores de la base de datos pueden conocer la contraseña real de nadie.
+- **Sesiones Privadas e Intransferibles:** Cuando inicias sesión, el sistema genera un identificador exclusivo en tu navegador. Al cerrar sesión, dicho identificador se destruye de inmediato para evitar que otra persona pueda continuar usando tu cuenta.
+- **Bloqueo Preventivo:** Si un empleado deja de laborar en el supermercado, el administrador puede desactivar su acceso con un solo clic sin tener que borrar sus ventas ni su historial de trabajo.
+
+---
+
+## 10. Manejo de Fotos y Archivos de Productos
+
+El catálogo de alimentos frescos de SuperFresco cuenta con soporte para fotografías reales de los productos. El proceso se gestiona de manera cuidadosa:
+
+- **Comprobación de Calidad y Formato:** El sistema verifica que el archivo subido sea efectivamente una imagen real (como formatos JPG, PNG o WEBP) y que su tamaño no sobrepase los límites permitidos para no ralentizar el servidor.
+- **Asignación de Nombres Únicos:** A cada fotografía subida se le asigna un nombre digital irrepetible. Esto evita que dos productos con el mismo nombre sobreescriban accidentalmente la imagen del otro.
+- **Limpieza de Archivos:** Cuando un producto se actualiza con una foto nueva o se retira del catálogo, la imagen anterior se elimina para mantener limpio el almacenamiento del servidor.
+
+---
+
+## 11. Ajustes y Parámetros del Entorno
+
+Cada instalación del sistema (ya sea en una computadora local de desarrollo o en un servidor comercial en la nube) cuenta con una libreta confidencial de configuración.
+
+En esta libreta se definen datos como:
+- El nombre oficial del establecimiento.
+- La dirección y puerto de conexión con la base de datos.
+- Las claves y credenciales privadas del servidor.
+
+Esta información se mantiene estrictamente privada dentro de la máquina local y nunca se comparte públicamente en internet para proteger la infraestructura del supermercado.
+
+---
+
+## 12. Acceso a Todo el Sistema y Control de Roles
+
+Esta es una de las piezas más importantes de toda la plataforma: **definir quién puede entrar al sistema y exactamente hasta dónde puede llegar cada persona**.
+
+El sistema cuenta con un modelo de seguridad jerárquico donde la administración y los permisos están blindados bajo una regla clara y transparente:
+
+### Regla Principal de Registro
+Cuando una persona ingresa a la tienda por internet y decide crear una cuenta mediante el formulario de registro público, el sistema le asigna de manera obligatoria y automática el rol de **Cliente**.
+
+**Nadie puede registrarse por su cuenta como empleado ni como administrador.** El sistema bloquea cualquier intento de auto-asignarse permisos superiores durante el registro público.
+
+---
+
+### La Facultad Exclusiva del Administrador
+El **Administrador** es la única persona autorizada para decidir quién forma parte del equipo de trabajo del supermercado.
+
+Desde el panel interno de gestión de usuarios, el Administrador tiene la potestad de:
+1. Revisar los nuevos clientes que se han registrado en la tienda.
+2. Evaluar a los postulantes o trabajadores del negocio.
+3. Presionar un botón directo llamado **"Hacer Empleado"** para otorgarle formalmente los permisos operativos a un usuario.
+4. Si un empleado deja de trabajar en el negocio o cambia de funciones, presionar el botón **"Pasar a Cliente"** para retirarle los permisos de inventario inmediatamente sin borrar su historial comercial.
+
+---
+
+### Niveles de Acceso y Alcance por Perfil
+
+A continuación se detalla con precisión a qué partes del sistema tiene acceso cada tipo de usuario:
+
+| Nivel de Usuario | Qué Partes del Sistema Puede Usar | Qué Tiene Prohibido Hacer |
 | :--- | :--- | :--- |
-| `{{ $variable }}` | Imprime texto **escapando HTML** (Protección contra XSS). | `{{ $p->nombre }}` |
-| `@csrf` | Inserta un token oculto para evitar ataques de falsificación de peticiones. | `<form> @csrf ... </form>` |
-| `@method('PUT')` | Simula métodos HTTP `PUT`, `PATCH` o `DELETE` en formularios HTML. | `<form> @method('PUT') ... </form>` |
-| `@if / @endif` | Estructuras condicionales. | `@if($p->stock_actual == 0) Agotado @endif` |
-| `@foreach` | Iteración sobre colecciones de Eloquent. | `@foreach($productos as $p) ... @endforeach` |
-| `@error('campo')` | Muestra mensajes de error de validación de formulario. | `@error('precio') <small>{{ $message }}</small> @enderror` |
+| **Administrador**<br>*(Control Total)* | **Acceso ilimitado a todo el sistema:**<br>• Gestión completa de usuarios (crear, editar, bloquear y asignar roles).<br>• Control de familias y categorías de alimentos.<br>• Directorio de proveedores comerciales.<br>• Catálogo maestro de productos (precios, costos, existencias y fotos).<br>• Módulo de inventario y registro de entradas, salidas y mermas.<br>• Punto de Venta (POS) para cobrar ventas y emitir facturas.<br>• Reportes financieros ejecutivos descargables en PDF y Excel. | No tiene restricciones dentro del sistema. Únicamente el sistema le impide bloquearse a sí mismo o eliminarse por accidente para evitar que el negocio quede sin administrador. |
+| **Empleado**<br>*(Personal Operativo)* | **Acceso a la operación diaria de la tienda:**<br>• Panel operativo de empleado con indicadores de stock y valorización.<br>• Catálogo de productos para consultar y actualizar existencias.<br>• Módulo de inventario para registrar ingresos de mercancía y salidas por vencimiento.<br>• Visualización de alertas de stock bajo en tiempo real para reabastecer a tiempo. | • **Prohibido el módulo de Usuarios:** No puede ver cuentas, ni crear usuarios ni alterar roles.<br>• **Prohibido el módulo de Proveedores y Categorías maestras.**<br>• No puede eliminar registros históricos ni realizar configuraciones globales. |
+| **Cliente**<br>*(Comprador y Usuario Web)* | **Acceso a la experiencia comercial:**<br>• Exploración completa del catálogo de productos y alimentos frescos.<br>• Consulta de precios vigentes y disponibilidad de existencias.<br>• Navegación en la tienda virtual para planear sus pedidos. | • **Prohibido el ingreso a cualquier área interna:** No tiene acceso al panel de administración, inventario, reportes ni gestión de usuarios.<br>• Si intenta escribir una dirección administrativa en su navegador, el sistema lo detiene y le prohíbe el paso. |
 
 ---
 
-## 8. Migraciones y Esquema de Base de Datos
+### Blindaje de Rutas y Menús Personalizados
+Para garantizar que estas reglas se cumplan sin excepciones:
 
-Las migraciones son el **control de versiones** de tu base de datos. Permiten definir y modificar tablas mediante código PHP reproducible:
+- **Menú Lateral Adaptativo:** Al iniciar sesión, la barra de navegación lateral se transforma según la persona:
+  - El **Administrador** ve todos los accesos: Tablero, Usuarios, Categorías, Productos, Inventario, Ventas y Reportes.
+  - El **Empleado** solo ve: Inicio operativo, Productos e Inventario con alerta de stock crítico.
+  - El **Cliente** solo ve: Catálogo de Productos y Tienda Online.
+- **Protección Interna en Cada Pantalla:** Aunque alguien intente adivinar la dirección web de una sección protegida (como la gestión de usuarios o las ventas), el sistema verifica en milisegundos su rol real en la base de datos y le niega el acceso de forma rotunda si no cuenta con la autorización requerida.
 
-```php
-// database/migrations/2025_01_01_000005_create_productos_table.php
-Schema::create('productos', function (Blueprint $table) {
-    $table->integer('id_producto')->autoIncrement();
-    $table->integer('id_categoria')->nullable();
-    $table->string('codigo', 50)->unique();
-    $table->string('nombre', 150);
-    $table->decimal('precio', 10, 2)->default(0.00);
-    $table->integer('stock_actual')->default(0);
-    $table->string('imagen')->nullable();
-    $table->tinyInteger('estado')->default(1);
-    
-    // Llaves foráneas
-    $table->foreign('id_categoria')->references('id_categoria')->on('categorias');
-});
-```
-
----
-
-## 9. Autenticación, Sesiones y Seguridad
-
-Laravel cuenta con un sistema integrado y seguro para gestionar usuarios y sesiones:
-
-```mermaid
-flowchart TD
-    Login[Usuario envía email y password] --> Find[Busca usuario por email en DB]
-    Find --> HashCheck{Hash::check(password, password_hash)}
-    HashCheck -->|Coincide| Session[Auth::login(usuario) + Regenera ID de Sesión]
-    Session --> Dashboard[Redirige a /dashboard]
-    HashCheck -->|No coincide| Error[Retorna con error de credenciales]
-```
-
-### Hasheo Seguro de Contraseñas (Bcrypt)
-Las contraseñas **nunca** se guardan en texto plano en la base de datos:
-- Para verificar al autenticar: `Hash::check($passwordPlano, $usuario->password_hash)`
-- Para registrar un nuevo usuario: `Hash::make($password)`
-
-### Protección CSRF
-Todos los formularios que envían datos (`POST`, `PUT`, `DELETE`) incluyen la directiva `@csrf`. Laravel genera un token único por sesión que valida que la petición proviene genuinamente de tu aplicación y no de un sitio malicioso externo.
-
----
-
-## 10. Gestión de Carga de Archivos (File Uploads)
-
-Para recibir archivos desde un formulario web:
-
-1. El formulario **debe** tener el atributo `enctype="multipart/form-data"`.
-2. En el controlador se valida que sea una imagen válida:
-   ```php
-   $r->validate([
-       'imagen_archivo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120'
-   ]);
-   ```
-3. Se genera un nombre único y se almacena en la carpeta pública:
-   ```php
-   if ($r->hasFile('imagen_archivo') && $r->file('imagen_archivo')->isValid()) {
-       $file = $r->file('imagen_archivo');
-       $nombreUnico = 'prod_' . uniqid() . '.' . $file->getClientOriginalExtension();
-       $file->move(public_path('uploads/productos'), $nombreUnico);
-       $data['imagen'] = 'uploads/productos/' . $nombreUnico;
-   }
-   ```
-4. Se elimina el archivo físico previo al actualizar o borrar para evitar archivos huérfanos:
-   ```php
-   if ($producto->imagen && file_exists(public_path($producto->imagen))) {
-       @unlink(public_path($producto->imagen));
-   }
-   ```
-
----
-
-## 11. Variables de Entorno y Configuración (.env)
-
-El archivo `.env` almacena variables sensibles y configuraciones específicas del entorno local de cada máquina:
-
-```ini
-APP_NAME=SuperFresco
-APP_ENV=local
-APP_DEBUG=true
-APP_URL=http://localhost:8000
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3320
-DB_DATABASE=bdsupermercado_dev
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-> [!IMPORTANT]
-> El archivo `.env` está en el `.gitignore` y **nunca debe subirse a repositorios públicos de GitHub**. Para compartir la estructura con otros desarrolladores, se utiliza `.env.example` con las claves vacías.
-
----
-
-## Resumen de Comandos Artisan Más Usados
-
-| Comando | Función |
-| :--- | :--- |
-| `php artisan serve` | Enciende el servidor local de desarrollo (`http://127.0.0.1:8000`). |
-| `php artisan route:list` | Muestra la lista completa de rutas registradas en el sistema. |
-| `php artisan migrate` | Ejecuta las migraciones pendientes en la base de datos MySQL. |
-| `php artisan tinker` | Abre una consola interactiva para probar código PHP y consultas Eloquent. |
-| `php artisan optimize:clear` | Limpia todas las cachés de configuración, rutas y vistas Blade. |
+De esta manera, el supermercado SuperFresco opera de forma ordenada, segura y profesional, asegurando que cada persona tenga a su disposición únicamente las herramientas que necesita para su función.

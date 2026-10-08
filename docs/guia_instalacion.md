@@ -1,157 +1,101 @@
-# Guía de Instalación, Configuración y Mantenimiento — SuperFresco
+# Guía Práctica de Instalación y Puesta en Marcha — SuperFresco
 
-Esta guía detalla los pasos para desplegar, configurar y mantener en funcionamiento el proyecto **SuperFresco** en entornos locales (especialmente con **Laragon** en Windows) y en servidores de producción.
+Esta guía explica, paso a paso y de manera sencilla y humana, cómo instalar, encender y dejar completamente operativo el sistema de **SuperFresco** en cualquier computador personal o servidor local.
 
----
-
-## 1. Requisitos del Sistema
-
-Antes de iniciar, asegúrate de contar con las siguientes dependencias instaladas en tu equipo o servidor:
-
-* **PHP:** Versión `8.2` o `8.3` con las siguientes extensiones habilitadas:
-  * `pdo_mysql`
-  * `mbstring`
-  * `openssl`
-  * `curl`
-  * `gd` (necesaria para el procesamiento de imágenes y logos de PDF)
-  * `fileinfo` (para validación de tipos MIME al subir imágenes)
-* **Gestor de Paquetes:** Composer `2.x`.
-* **Motor de Base de Datos:** MySQL `8.0+` o MariaDB `10.4+`.
-* **Entorno recomendado en Windows:** [Laragon](https://laragon.org/) (incluye PHP, MySQL, Apache/Nginx y terminal integrada).
+Está redactada para que cualquier persona, sin importar su nivel de experiencia técnica, pueda seguir las instrucciones sin enredos y comprenda qué está sucediendo en cada etapa.
 
 ---
 
-## 2. Instalación Paso a Paso (Entorno Laragon / Local)
+## Índice
 
-### Paso 1: Clonar o ubicar el repositorio
-Ubica el código fuente dentro del directorio web de tu servidor local (ejemplo en Laragon: `C:\laragon\www\inventario_laravel`):
-
-```bash
-cd c:\laragon\www\inventario_laravel
-```
-
-### Paso 2: Instalar dependencias de PHP
-Ejecuta Composer para descargar las librerías del framework y paquetes como `barryvdh/laravel-dompdf`:
-
-```bash
-composer install
-```
-
-### Paso 3: Configuración de Variables de Entorno (`.env`)
-Si no existe el archivo `.env`, copia el archivo de plantilla:
-
-```bash
-cp .env.example .env
-```
-
-Abre `.env` y ajusta los parámetros de conexión. Por ejemplo, en Laragon o entornos con MySQL en puertos personalizados:
-
-```dotenv
-APP_NAME=SuperFresco
-APP_ENV=local
-APP_KEY=
-APP_DEBUG=true
-APP_URL=http://127.0.0.1:8000
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3320        # Ajustar según tu puerto (3320 o 3306)
-DB_DATABASE=bdsupermercado_dev
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-### Paso 4: Generar la Clave de Cifrado (`APP_KEY`)
-Genera la llave secreta que utiliza Laravel para cifrar cookies y sesiones:
-
-```bash
-php artisan key:generate
-```
-
-### Paso 5: Enlace Simbólico de Almacenamiento
-Vincula la carpeta `storage/app/public` con `public/storage` para servir las imágenes de productos:
-
-```bash
-php artisan storage:link
-```
-
-### Paso 6: Migraciones y Datos Semilla (Seeders)
-Crea las tablas y los roles esenciales (`administrador`, `empleado`, `cliente`):
-
-```bash
-php artisan migrate --seed
-```
-
-### Paso 7: Iniciar el Servidor de Desarrollo
-Enciende el servidor integrado de Artisan:
-
-```bash
-php artisan serve
-```
-
-La aplicación estará disponible inmediatamente en [http://127.0.0.1:8000](http://127.0.0.1:8000).
+1. [Programas y Requisitos Previos](#1-programas-y-requisitos-previos)
+2. [Pasos para la Instalación y Puesta en Marcha](#2-pasos-para-la-instalación-y-puesta-en-marcha)
+3. [Cuentas de Acceso Iniciales y Roles](#3-cuentas-de-acceso-iniciales-y-roles)
+4. [Mantenimiento y Cuidados del Sistema](#4-mantenimiento-y-cuidados-del-sistema)
+5. [Solución de Inconvenientes Comunes](#5-solución-de-inconvenientes-comunes)
 
 ---
 
-## 3. Credenciales de Acceso Iniciales
+## 1. Programas y Requisitos Previos
 
-Tras correr el seeder o importar la base de datos `bdsupermercado_dev`, dispones de las siguientes cuentas predeterminadas:
+Antes de comenzar la instalación, asegúrate de tener instaladas las herramientas básicas de trabajo en tu equipo:
 
-* **Administrador Principal:**
-  * **Email:** `admin@superfresco.com`
-  * **Contraseña:** `admin123`
-* **Empleado Operativo:**
-  * **Email:** `cortes@gmail.com`
-  * **Contraseña:** `123456`
+- **Entorno de Trabajo Local:** Se recomienda utilizar **Laragon** en sistemas Windows, ya que incluye de fábrica el servidor web, el motor de base de datos y la terminal de trabajo lista para usar.
+- **Motor de Base de Datos:** Contar con el servicio de MySQL activo en el computador.
+- **Manejador de Paquetes:** La herramienta de gestión de dependencias del sistema instalada y actualizada.
+- **Navegador Web Moderno:** Google Chrome, Microsoft Edge, Mozilla Firefox o cualquier navegador actualizado para ver e interactuar con la tienda y el panel de control.
 
 ---
 
-## 4. Comandos de Mantenimiento Frecuentes
+## 2. Pasos para la Instalación y Puesta en Marcha
 
-Durante el desarrollo o actualización de la plataforma, estos comandos son fundamentales:
+Sigue estos pasos en orden para poner en funcionamiento la plataforma:
 
-### Limpieza de Caché
-```bash
-# Limpiar caché de vistas Blade compiladas
-php artisan view:clear
+### Paso 1: Ubicar la carpeta del proyecto
+Coloca la carpeta del proyecto dentro del directorio de trabajo de tu servidor local. Si utilizas Laragon, la ubicación estándar es la carpeta de aplicaciones web dentro del disco principal.
 
-# Limpiar caché de rutas
-php artisan route:clear
+### Paso 2: Descarga de las librerías del sistema
+Abre la terminal de tu entorno de trabajo en la carpeta del proyecto y solicita la instalación de las librerías. El gestor se encargará de descargar automáticamente todos los componentes que necesita la plataforma, incluyendo el generador de facturas y los motores de diseño.
 
-# Limpiar caché de configuración (.env)
-php artisan config:clear
+### Paso 3: Configurar la libreta de ajustes del entorno
+El sistema cuenta con un archivo de ajustes donde se definen las conexiones principales:
+- Toma el archivo de plantilla de configuración y crea una copia con el nombre de configuración activa del sistema.
+- Abre dicho archivo con cualquier editor de texto y revisa que el nombre de la base de datos y el puerto de conexión coincidan con los de tu motor de base de datos local (por lo general, el puerto suele ser el estándar o el asignado por Laragon en tu máquina).
 
-# Limpieza general de caché de la aplicación
-php artisan cache:clear
-```
+### Paso 4: Generar el sello digital de seguridad
+Solicita al sistema que cree su clave maestra de cifrado. Esta clave es un sello digital único que el supermercado utiliza para proteger las sesiones de los usuarios, encriptar las comunicaciones y resguardar la privacidad de los clientes.
 
-### Verificación de Rutas y Base de Datos
-```bash
-# Listar todas las rutas registradas y sus controladores
-php artisan route:list
+### Paso 5: Enlazar la bodega de fotografías de productos
+Para que las fotos que subas de frutas, verduras y abarrotes se muestren de inmediato en la tienda online y en el catálogo, es necesario activar el enlace de almacenamiento público. Esto conecta la carpeta interna de archivos con el visor público de la página web.
 
-# Verificar estado y conectividad con MySQL
-php artisan db:show
-```
+### Paso 6: Construir las tablas y roles en la base de datos
+Ejecuta la instrucción de construcción de base de datos con carga inicial. Esta acción creará de forma automática todas las tablas necesarias (usuarios, roles, productos, categorías, proveedores, inventario, ventas y facturas) e insertará los tres perfiles base del negocio: **Administrador**, **Empleado** y **Cliente**.
+
+### Paso 7: Encender el servidor y comenzar
+Inicia el servidor local de la aplicación. Una vez encendido, abre tu navegador de preferencia y visita la dirección local del sistema en el puerto habitual para ver la tienda de SuperFresco en vivo y en directo.
 
 ---
 
-## 5. Solución de Problemas Frecuentes (Troubleshooting)
+## 3. Cuentas de Acceso Iniciales y Roles
 
-### Problema 1: "SQLSTATE[HY000] [2002] Connection refused"
-* **Causa:** El puerto de MySQL configurado en `.env` no coincide con el puerto donde está corriendo el servicio MySQL en Laragon.
-* **Solución:** Verifica en Laragon qué puerto tiene asignado MySQL (clic derecho en Laragon > MySQL > Cambiar puerto). Si es `3306` o `3320`, asegúrate de actualizar `DB_PORT` en [.env](file:///c:/laragon/www/inventario_laravel/.env) y reiniciar el servidor.
+Una vez finalizada la preparación inicial, el sistema queda listo con dos cuentas principales para que puedas ingresar y comenzar a trabajar:
 
-### Problema 2: "Integrity constraint violation: 1452 Cannot add or update a child row (fk_usuarios_rol)"
-* **Causa:** Se intenta registrar un usuario con un `id_rol` que no existe en la tabla `roles`.
-* **Solución:** Ejecuta el seeder oficial para restablecer los 3 roles del sistema:
-  ```bash
-  php artisan db:seed --class=DatabaseSeeder
-  ```
-  Esto garantizará la existencia de los roles `1: administrador`, `2: empleado` y `3: cliente`.
+### Cuenta del Administrador Principal
+- **Correo electrónico:** admin@superfresco.com
+- **Contraseña inicial:** admin123
+- **Alcance:** Tiene acceso irrestricto y absoluto a todos los módulos: creación y administración de usuarios, asignación de roles, inventario, compras, ventas y reportes ejecutivos.
 
-### Problema 3: "The stream or file .../storage/logs/laravel.log could not be opened: failed to open stream: Permission denied"
-* **Causa:** Permisos insuficientes en las carpetas de logs o sesiones.
-* **Solución:** Otorga permisos de escritura a las carpetas `storage` y `bootstrap/cache`:
-  * En Linux: `chmod -R 775 storage bootstrap/cache`
-  * En Windows: Asegúrate de que el usuario tenga control total sobre la carpeta del proyecto.
+### Cuenta del Empleado Operativo
+- **Correo electrónico:** cortes@gmail.com
+- **Contraseña inicial:** 123456
+- **Alcance:** Acceso operativo para registrar movimientos de bodega, actualizar precios y existencias de productos, y monitorear el inventario diario.
+
+> **Importante sobre nuevos registros:** Cualquier persona externa que cree una cuenta desde el formulario público de la tienda ingresará de forma automática y estricta como **Cliente**. Solo el Administrador principal tiene la potestad de decidir si le asigna el rol de **Empleado** desde el panel interno de gestión de usuarios.
+
+---
+
+## 4. Mantenimiento y Cuidados del Sistema
+
+Para conservar la plataforma ágil, estable y rápida a lo largo del tiempo, ten en cuenta las siguientes recomendaciones prácticas:
+
+- **Limpieza periódica de archivos temporales:** Con el uso constante, el sistema guarda copias temporales de pantallas y ajustes para acelerar la carga. Si realizas cambios visuales o ajustas configuraciones y no los ves reflejados de inmediato en pantalla, solicita al sistema limpiar la memoria temporal.
+- **Revisión del estado de la base de datos:** Siempre asegúrate de que el servicio de MySQL esté encendido en tu panel de Laragon antes de iniciar el servidor web, de lo contrario la página no podrá cargar los productos.
+- **Resguardo de contraseñas:** Una vez instalado el proyecto en un entorno real o productivo, se recomienda cambiar inmediatamente las contraseñas iniciales por defecto desde el módulo de gestión de usuarios.
+
+---
+
+## 5. Solución de Inconvenientes Comunes
+
+Si al encender el sistema encuentras algún contratiempo, aquí tienes las soluciones más habituales explicadas con sencillez:
+
+- **Mensaje de fallo de conexión con la base de datos:**
+  * *Causa habitual:* El puerto configurado en el archivo de ajustes no coincide con el puerto donde está encendido MySQL en Laragon.
+  * *Cómo solucionarlo:* Haz clic derecho en el icono de Laragon, dirígete a la sección de MySQL y verifica qué puerto tiene asignado. Ajusta ese mismo número en tu archivo de configuración del sistema y vuelve a probar.
+
+- **Mensaje sobre roles faltantes al registrar usuarios:**
+  * *Causa habitual:* La base de datos se creó pero aún no se le cargaron los perfiles iniciales de acceso.
+  * *Cómo solucionarlo:* Solicita la ejecución de la siembra inicial de datos para restablecer los roles de Administrador, Empleado y Cliente en las tablas del supermercado.
+
+- **Las imágenes de los productos no se visualizan en la tienda:**
+  * *Causa habitual:* Falta crear el enlace de almacenamiento entre la carpeta de guardado y la vista pública.
+  * *Cómo solucionarlo:* Activa el enlace de almacenamiento del sistema para que las imágenes queden inmediatamente visibles al público.
