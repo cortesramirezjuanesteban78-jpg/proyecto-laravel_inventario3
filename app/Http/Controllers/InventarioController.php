@@ -11,6 +11,7 @@ class InventarioController extends Controller
 {
     public function index(Request $r)
     {
+        abort_if(auth()->user()->rol === 'cliente', 403, 'Acceso restringido para clientes.');
         $query = Producto::with('categoria')->where('estado', 1);
 
         if ($r->filled('search')) {
@@ -40,6 +41,7 @@ class InventarioController extends Controller
 
     public function stockLive(Request $r)
     {
+        abort_if(auth()->user()->rol === 'cliente', 403, 'Acceso restringido para clientes.');
         $query = Producto::with('categoria')->where('estado', 1);
 
         if ($r->filled('search')) {
@@ -97,6 +99,7 @@ class InventarioController extends Controller
 
     public function mover(Request $r, $id)
     {
+        abort_if(auth()->user()->rol === 'cliente', 403, 'Acceso restringido para clientes.');
         $producto = Producto::findOrFail($id);
 
         $r->validate([

@@ -87,6 +87,7 @@ class ReporteController extends Controller
      */
     public function index(Request $r)
     {
+        abort_if(auth()->user()->rol === 'cliente', 403, 'Acceso restringido para clientes.');
         $year = (int) $r->get('year', now()->year);
         $data = $this->getReportData($year);
 
@@ -98,6 +99,7 @@ class ReporteController extends Controller
      */
     public function exportPdf(Request $r)
     {
+        abort_if(auth()->user()->rol === 'cliente', 403, 'Acceso restringido para clientes.');
         $year = (int) $r->get('year', now()->year);
         $data = $this->getReportData($year);
 
@@ -113,6 +115,7 @@ class ReporteController extends Controller
      */
     public function exportExcel(Request $r)
     {
+        abort_if(auth()->user()->rol === 'cliente', 403, 'Acceso restringido para clientes.');
         $year = (int) $r->get('year', now()->year);
         $data = $this->getReportData($year);
 

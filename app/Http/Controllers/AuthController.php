@@ -70,6 +70,8 @@ class AuthController extends Controller
             'password.confirmed' => 'Las contraseñas no coinciden.',
         ]);
 
+        // Regla de Negocio: Todo usuario nuevo registrado se crea ESTRICTAMENTE con rol de "cliente".
+        // Únicamente el Administrador del sistema tiene la facultad de otorgarle el rol de "empleado".
         $rolCliente = \App\Models\Rol::where('nombre', 'cliente')->value('id_rol') ?? 3;
 
         $usuario = Usuario::create([
@@ -79,14 +81,24 @@ class AuthController extends Controller
             'email'         => $request->email,
             'password_hash' => Hash::make($request->password),
             'telefono'      => $request->telefono,
-            'rol'           => 'cliente',
+            'rol'           => 'cliente', // Siempre cliente al registrarse públicamente
             'estado'        => 1,
         ]);
 
         Auth::login($usuario);
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard')->with('success', '¡Bienvenido, ' . $usuario->nombres . '!');
+        // Sincronizar automáticamente con la tabla clientes para el módulo de ventas
+        \App\Models\Cliente::updateOrCreate(
+            ['correo' => $usuario->email],
+            [
+                'nombre'    => trim($usuario->nombres . ' ' . $usuario->apellidos),
+                'telefono'  => $usuario->telefono,
+                'documento' => 'CLI-' . str_pad($usuario->id_usuario, 4, '0', STR_PAD_LEFT),
+            ]
+        );
+
+        return redirect()->route('dashboard')->with('success', '¡Bienvenido a SuperFresco, ' . $usuario->nombres . '! Tu cuenta de cliente ha sido creada exitosamente.');
     }
 
     // ─── LOGOUT ───────────────────────────────────────────────────────────────

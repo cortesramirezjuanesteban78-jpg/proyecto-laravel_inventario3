@@ -11,7 +11,13 @@ class ProductoController extends Controller
 {
     public function index(Request $r)
     {
+        $isCliente = auth()->check() && auth()->user()->rol === 'cliente';
         $query = Producto::with(['categoria', 'proveedor']);
+
+        // Si es cliente, solo ve productos activos
+        if ($isCliente) {
+            $query->where('estado', 1);
+        }
 
         if ($r->filled('search')) {
             $search = $r->search;
@@ -21,7 +27,7 @@ class ProductoController extends Controller
             });
         }
 
-        if ($r->filled('estado')) {
+        if ($r->filled('estado') && !$isCliente) {
             $query->where('estado', $r->estado);
         }
 
@@ -41,12 +47,13 @@ class ProductoController extends Controller
         $proveedores = Proveedor::where('estado', 1)->orderBy('nombre')->get();
 
         return view('productos.index', compact(
-            'productos', 'total', 'activos', 'stockBajo', 'agotados', 'categorias', 'proveedores'
+            'productos', 'total', 'activos', 'stockBajo', 'agotados', 'categorias', 'proveedores', 'isCliente'
         ));
     }
 
     public function create()
     {
+        abort_if(auth()->user()->rol === 'cliente', 403, 'Los clientes solo pueden visualizar los productos.');
         $categorias = Categoria::orderBy('nombre')->get();
         $proveedores = Proveedor::where('estado', 1)->orderBy('nombre')->get();
 
@@ -55,6 +62,7 @@ class ProductoController extends Controller
 
     public function store(Request $r)
     {
+        abort_if(auth()->user()->rol === 'cliente', 403, 'Los clientes solo pueden visualizar los productos.');
         $r->validate([
             'nombre'         => 'required|string|max:150',
             'codigo'         => 'required|string|max:50|unique:productos,codigo',
@@ -92,6 +100,7 @@ class ProductoController extends Controller
 
     public function edit($id)
     {
+        abort_if(auth()->user()->rol === 'cliente', 403, 'Los clientes solo pueden visualizar los productos.');
         $producto    = Producto::findOrFail($id);
         $categorias  = Categoria::orderBy('nombre')->get();
         $proveedores = Proveedor::orderBy('nombre')->get();
@@ -101,6 +110,7 @@ class ProductoController extends Controller
 
     public function update(Request $r, $id)
     {
+        abort_if(auth()->user()->rol === 'cliente', 403, 'Los clientes solo pueden visualizar los productos.');
         $producto = Producto::findOrFail($id);
 
         $r->validate([
@@ -161,6 +171,7 @@ class ProductoController extends Controller
 
     public function destroy($id)
     {
+        abort_if(auth()->user()->rol === 'cliente', 403, 'Los clientes solo pueden visualizar los productos.');
         $producto = Producto::findOrFail($id);
         if ($producto->imagen && file_exists(public_path($producto->imagen))) {
             @unlink(public_path($producto->imagen));
@@ -173,6 +184,7 @@ class ProductoController extends Controller
 
     public function toggleEstado($id)
     {
+        abort_if(auth()->user()->rol === 'cliente', 403, 'Los clientes solo pueden visualizar los productos.');
         $producto = Producto::findOrFail($id);
         $producto->update(['estado' => $producto->estado ? 0 : 1]);
 

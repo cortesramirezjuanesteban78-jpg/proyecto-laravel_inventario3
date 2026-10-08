@@ -87,10 +87,148 @@
     .btn-icon {
         width: 32px; height: 32px; border-radius: 8px; border: none; cursor: pointer;
         display: inline-flex; align-items: center; justify-content: center;
-        font-size: .9rem; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3;
-        transition: all .15s;
+        font-size: .9rem; transition: all .15s;
     }
-    .btn-icon:hover { transform: scale(1.1); }
+    .btn-icon-factura {
+        background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; text-decoration: none;
+    }
+    .btn-icon-factura:hover {
+        background: #d1fae5; color: #042217; transform: scale(1.1);
+    }
+    .btn-icon-pdf {
+        background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; text-decoration: none;
+    }
+    .btn-icon-pdf:hover {
+        background: #dbeafe; color: #1e40af; transform: scale(1.1);
+    }
+    .btn-icon-del {
+        background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; cursor: pointer;
+    }
+    .btn-icon-del:hover {
+        background: #fee2e2; color: #be123c; transform: scale(1.1);
+    }
+
+    /* Sale Success Card (Flash Invoice Generator) */
+    .sale-success-card {
+        background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        border: 1.5px solid #a7f3d0;
+        border-radius: 16px;
+        padding: 1.1rem 1.5rem;
+        margin-bottom: 1.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.2rem;
+        box-shadow: 0 4px 14px rgba(16, 111, 78, 0.12);
+        animation: fadeInDown 0.3s ease-out;
+    }
+    .ssc-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .ssc-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1.5px solid #a7f3d0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(16, 111, 78, 0.1);
+    }
+    .ssc-left h4 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #065f46;
+        margin-bottom: 0.15rem;
+    }
+    .ssc-left p {
+        font-size: 0.82rem;
+        color: #047857;
+    }
+    .ssc-actions {
+        display: flex;
+        gap: 0.65rem;
+        flex-shrink: 0;
+    }
+    .btn-ssc-invoice {
+        background: #0b4e37;
+        color: #ffffff;
+        padding: 0.55rem 1.1rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        box-shadow: 0 3px 8px rgba(11, 78, 55, 0.25);
+        transition: all 0.2s;
+    }
+    .btn-ssc-invoice:hover {
+        background: #063826;
+        transform: translateY(-1px);
+    }
+    .btn-ssc-pdf {
+        background: #ffffff;
+        color: #0b4e37;
+        border: 1.5px solid #a7f3d0;
+        padding: 0.55rem 1rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        transition: all 0.2s;
+    }
+    .btn-ssc-pdf:hover {
+        background: #f0fdf4;
+    }
+
+    /* POS Invoice Toggle */
+    .pos-invoice-toggle {
+        background: #f1f5f9;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+    }
+    .pos-checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+        width: 100%;
+    }
+    .pos-check-input {
+        width: 19px;
+        height: 19px;
+        accent-color: #106f4e;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .pos-check-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+    .pos-check-text strong {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+    .pos-check-text small {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
 
     .pag-wrap { padding: 1rem 1.6rem; border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end; }
 
@@ -531,6 +669,28 @@
 
 @section('content')
 
+@if(session('venta_creada_id'))
+<div class="sale-success-card">
+    <div class="ssc-left">
+        <div class="ssc-icon">🎉</div>
+        <div>
+            <h4>¡Venta #{{ session('venta_creada_id') }} Registrada Exitosamente!</h4>
+            <p>La transacción ha sido guardada en el sistema y el inventario ha sido actualizado.</p>
+        </div>
+    </div>
+    <div class="ssc-actions">
+        <a href="{{ route('ventas.factura', session('venta_creada_id')) }}" class="btn-ssc-invoice">
+            <span>🧾</span>
+            <span>Ver e Imprimir Factura</span>
+        </a>
+        <a href="{{ route('ventas.factura.pdf', session('venta_creada_id')) }}" class="btn-ssc-pdf">
+            <span>📥</span>
+            <span>Descargar PDF</span>
+        </a>
+    </div>
+</div>
+@endif
+
 {{-- Stats --}}
 <div class="stats-row">
     <div class="stat-card green">
@@ -579,8 +739,16 @@
         <tr>
             <td>#{{ $v->id_venta }}</td>
             <td>{{ \Carbon\Carbon::parse($v->fecha_venta)->format('d/m/Y H:i') }}</td>
-            <td>{{ $v->usuario ? $v->usuario->nombres . ' ' . $v->usuario->apellidos : '—' }}</td>
-            <td>{{ $v->cliente ? $v->cliente->nombre : 'Público General' }}</td>
+            <td>
+                @if($v->cliente)
+                    <div style="font-weight:700; color:#0f172a;">{{ $v->cliente->nombre }}</div>
+                    @if($v->cliente->correo)
+                        <div style="font-size:0.76rem; color:#64748b;">{{ $v->cliente->correo }}</div>
+                    @endif
+                @else
+                    <span style="color:#64748b; font-style:italic;">Público General</span>
+                @endif
+            </td>
             <td>{{ ucfirst($v->metodo_pago) }}</td>
             <td>
                 <span class="badge
@@ -593,10 +761,16 @@
             <td><strong>${{ number_format($v->total, 2) }}</strong></td>
             <td>
                 <div class="actions">
+                    <a href="{{ route('ventas.factura', $v->id_venta) }}" class="btn-icon btn-icon-factura" title="Ver / Imprimir Factura #{{ $v->id_venta }}">
+                        🧾
+                    </a>
+                    <a href="{{ route('ventas.factura.pdf', $v->id_venta) }}" class="btn-icon btn-icon-pdf" title="Descargar Factura en PDF">
+                        📥
+                    </a>
                     <form method="POST" action="{{ route('ventas.destroy', $v->id_venta) }}"
-                          onsubmit="return confirm('¿Eliminar esta venta?')">
+                          onsubmit="return confirm('¿Eliminar esta venta #{{ $v->id_venta }}?')">
                         @csrf @method('DELETE')
-                        <button type="submit" class="btn-icon" title="Eliminar">🗑️</button>
+                        <button type="submit" class="btn-icon btn-icon-del" title="Eliminar Venta">🗑️</button>
                     </form>
                 </div>
             </td>
@@ -695,13 +869,18 @@
             <!-- Section: Detalles de la Transacción -->
             <div class="pos-meta-grid">
                 <div class="form-group-pos">
-                    <label>👤 Cliente</label>
+                    <label>👤 Cliente / Comprador ({{ $clientes->count() }} registrados)</label>
                     <select name="id_cliente" class="pos-input-meta">
-                        <option value="">Público General</option>
+                        <option value="">Público General (Consumidor Final)</option>
                         @foreach($clientes as $c)
-                        <option value="{{ $c->id_cliente }}">{{ $c->nombre }} ({{ $c->documento ?: 'Sin doc.' }})</option>
+                        <option value="{{ $c->id_cliente }}">
+                            {{ $c->nombre }} @if($c->correo)· {{ $c->correo }} @endif @if($c->telefono)· 📞 {{ $c->telefono }} @endif
+                        </option>
                         @endforeach
                     </select>
+                    <small style="font-size:0.75rem; color:#64748b; margin-top:0.3rem; display:block;">
+                        Selecciona un cliente registrado en el sistema o deja en Público General.
+                    </small>
                 </div>
 
                 <div class="form-group-pos">
@@ -721,6 +900,17 @@
                         <option value="cancelada">❌ Cancelada</option>
                     </select>
                 </div>
+            </div>
+
+            <!-- Opción de Facturación Inmediata -->
+            <div class="pos-invoice-toggle">
+                <label class="pos-checkbox-label">
+                    <input type="checkbox" name="imprimir_factura" value="1" checked class="pos-check-input">
+                    <div class="pos-check-text">
+                        <strong>🧾 Generar y abrir factura automáticamente</strong>
+                        <small>Al confirmar la venta, se abrirá la factura oficial lista para imprimir o descargar en PDF</small>
+                    </div>
+                </label>
             </div>
 
             <!-- Footer -->

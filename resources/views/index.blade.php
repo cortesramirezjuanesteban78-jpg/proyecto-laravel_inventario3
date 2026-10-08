@@ -901,7 +901,7 @@
     <div class="navbar-right">
         <div class="search-container">
             <span class="search-icon">🔍</span>
-            <input type="text" placeholder="Buscar producto..." aria-label="Buscar producto">
+            <input type="text" id="nav-product-search" placeholder="Buscar producto..." aria-label="Buscar producto" onkeyup="filterStoreCards(this.value)">
         </div>
         @auth
             <a href="{{ route('dashboard') }}" class="btn-cuenta">
@@ -1035,103 +1035,78 @@
     </div>
 </div>
 
-<!-- ═══════════════ OFERTAS DESTACADAS ═══════════════ -->
+<!-- ═══════════════ OFERTAS & CATÁLOGO DE PRODUCTOS ═══════════════ -->
 <div class="section-gray" id="ofertas">
     <div class="container">
         <div class="section">
             <div class="section-center-title">
-                <h2>Ofertas & Favoritos de la Semana</h2>
+                <h2>Todos Nuestros Productos Frescos</h2>
                 <span class="underline-accent"></span>
-                <p>Aprovecha precios especiales en productos seleccionados de alta demanda</p>
+                <p>Calidad garantizada del campo a tu mesa · {{ isset($productos) ? $productos->count() : 0 }} artículos disponibles</p>
             </div>
-            <div class="products-grid">
 
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&q=80" alt="Plátanos Frescos">
-                        <span class="badge-discount">-20% OFF</span>
-                        <button class="btn-wishlist" title="Guardar en favoritos">♡</button>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Frutas Orgánicas</div>
-                        <h3>Plátanos Cavendish Seleccionados (1kg)</h3>
-                        <div class="product-footer">
-                            <div class="product-prices">
-                                <span class="price-new">$1.20</span>
-                                <span class="price-old">$1.50</span>
+            <!-- Buscador y filtro de categorías en tienda -->
+            <div style="display:flex; justify-content:center; gap:0.8rem; margin-bottom:2.2rem; flex-wrap:wrap;">
+                <input type="text" id="live-product-search" placeholder="🔍 Buscar producto en tienda..." 
+                       onkeyup="filterStoreCards()"
+                       style="background:#fff; border:1.5px solid var(--border-subtle); border-radius:24px; padding:0.6rem 1.4rem; font-family:inherit; font-size:0.92rem; width:100%; max-width:380px; outline:none; box-shadow:var(--shadow-sm); transition:all .2s;">
+            </div>
+
+            <div class="products-grid" id="public-products-grid">
+                @if(isset($productos) && $productos->count() > 0)
+                    @foreach($productos as $prod)
+                    @php
+                        $imgSrc = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&q=80';
+                        if ($prod->imagen) {
+                            if (str_starts_with($prod->imagen, 'http://') || str_starts_with($prod->imagen, 'https://')) {
+                                $imgSrc = $prod->imagen;
+                            } else {
+                                $imgSrc = asset($prod->imagen);
+                            }
+                        }
+                    @endphp
+                    <div class="product-card store-card" data-name="{{ strtolower($prod->nombre) }}" data-category="{{ strtolower($prod->categoria->nombre ?? '') }}">
+                        <div class="product-img">
+                            <img src="{{ $imgSrc }}" alt="{{ $prod->nombre }}" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&q=80'">
+                            @if($prod->stock_actual <= 0)
+                                <span class="badge-discount" style="background:#dc2626;">Agotado</span>
+                            @elseif($prod->stock_actual <= $prod->stock_minimo)
+                                <span class="badge-discount" style="background:#d97706;">⚠️ Pocas Unidades ({{ $prod->stock_actual }})</span>
+                            @else
+                                <span class="badge-organic">🌿 En Stock ({{ $prod->stock_actual }})</span>
+                            @endif
+                            <button class="btn-wishlist" title="Guardar en favoritos" onclick="this.classList.toggle('active'); this.textContent = this.classList.contains('active') ? '❤️' : '♡';">♡</button>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-category">{{ $prod->categoria ? $prod->categoria->nombre : 'Mercado' }}</div>
+                            <h3>{{ $prod->nombre }}</h3>
+                            @if($prod->descripcion)
+                                <p style="font-size:0.8rem; color:#64748b; line-height:1.4; margin-bottom:0.7rem;">{{ Str::limit($prod->descripcion, 55) }}</p>
+                            @endif
+                            <div class="product-footer">
+                                <div class="product-prices">
+                                    <span class="price-new">${{ number_format($prod->precio, 0, ',', '.') }}</span>
+                                    <span style="font-size:0.75rem; color:#64748b; margin-left:auto;">Stock: <strong>{{ $prod->stock_actual }}</strong></span>
+                                </div>
+                                <button class="btn-agregar" onclick="alert('¡{{ addslashes($prod->nombre) }} agregado al carrito!')">
+                                    <span>🛒</span>
+                                    <span>Agregar al Carrito</span>
+                                </button>
                             </div>
-                            <button class="btn-agregar">
-                                <span>🛒</span>
-                                <span>Agregar al Carrito</span>
-                            </button>
                         </div>
                     </div>
-                </div>
+                    @endforeach
+                @else
+                    <div style="grid-column: 1 / -1; text-align:center; padding:3rem; color:#64748b;">
+                        <div style="font-size:3rem; margin-bottom:0.8rem;">📦</div>
+                        <p style="font-size:1.1rem; font-weight:700;">No hay productos registrados en el catálogo.</p>
+                    </div>
+                @endif
+            </div>
 
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="https://images.unsplash.com/photo-1582979512210-99b6a53386f9?w=400&q=80" alt="Naranjas Dulces">
-                        <span class="badge-organic">🌿 Orgánico</span>
-                        <button class="btn-wishlist" title="Guardar en favoritos">♡</button>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Cítricos del Valle</div>
-                        <h3>Naranjas Valencia Dulces (Malla 2kg)</h3>
-                        <div class="product-footer">
-                            <div class="product-prices">
-                                <span class="price-new">$3.50</span>
-                            </div>
-                            <button class="btn-agregar">
-                                <span>🛒</span>
-                                <span>Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&q=80" alt="Leche Entera">
-                        <span class="badge-discount">-15% OFF</span>
-                        <button class="btn-wishlist" title="Guardar en favoritos">♡</button>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Lácteos Frescos</div>
-                        <h3>Leche Entera Pasteurizada Botella Vidrio (1L)</h3>
-                        <div class="product-footer">
-                            <div class="product-prices">
-                                <span class="price-new">$1.10</span>
-                                <span class="price-old">$1.30</span>
-                            </div>
-                            <button class="btn-agregar">
-                                <span>🛒</span>
-                                <span>Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-img">
-                        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&q=80" alt="Pan Artesanal">
-                        <span class="badge-organic">✨ Artesanal</span>
-                        <button class="btn-wishlist" title="Guardar en favoritos">♡</button>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">Panadería Rústica</div>
-                        <h3>Pan de Molde Multigrano y Semillas</h3>
-                        <div class="product-footer">
-                            <div class="product-prices">
-                                <span class="price-new">$2.20</span>
-                            </div>
-                            <button class="btn-agregar">
-                                <span>🛒</span>
-                                <span>Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
+            <div id="no-search-results" style="display:none; text-align:center; padding:3rem; color:#64748b;">
+                <div style="font-size:3rem; margin-bottom:0.8rem;">🔍</div>
+                <p style="font-size:1.1rem; font-weight:700;">No se encontraron productos que coincidan con tu búsqueda.</p>
             </div>
         </div>
     </div>
@@ -1232,6 +1207,35 @@
 
     // Auto-avance suave cada 6 segundos
     setInterval(() => changeSlide(1), 6000);
+
+    function filterStoreCards(query) {
+        if (query === undefined) {
+            query = document.getElementById('live-product-search').value;
+        } else {
+            const liveInp = document.getElementById('live-product-search');
+            if (liveInp) liveInp.value = query;
+        }
+        query = (query || '').toLowerCase().trim();
+
+        const cards = document.querySelectorAll('.store-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const name = card.getAttribute('data-name') || '';
+            const cat  = card.getAttribute('data-category') || '';
+            if (!query || name.includes(query) || cat.includes(query)) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        const noRes = document.getElementById('no-search-results');
+        if (noRes) {
+            noRes.style.display = (visibleCount === 0 && cards.length > 0) ? 'block' : 'none';
+        }
+    }
 </script>
 </body>
 </html>

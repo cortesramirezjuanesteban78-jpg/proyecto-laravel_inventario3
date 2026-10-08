@@ -556,6 +556,23 @@
     <div class="menu-label">Menú de Control</div>
 
     <ul class="nav-list">
+        @if(Auth::user()->rol === 'cliente')
+        {{-- Menú Exclusivo para Cliente: SOLO puede ver los productos y la tienda online --}}
+        <li>
+            <a href="{{ route('productos.index') }}"
+               class="nav-link {{ Str::startsWith($activeMenu, 'productos') ? 'active' : '' }}">
+                <span class="nav-icon">📦</span>
+                <span>Ver Productos</span>
+            </a>
+        </li>
+        <li style="margin-top: 0.8rem; border-top: 1px dashed var(--border-subtle); padding-top: 0.8rem;">
+            <a href="{{ route('index') }}" class="nav-link" target="_blank" title="Ver Tienda Online">
+                <span class="nav-icon">🌐</span>
+                <span>Tienda Online</span>
+            </a>
+        </li>
+        @else
+        {{-- Menú para Administrador y Empleado --}}
         <li>
             <a href="{{ route('dashboard') }}"
                class="nav-link {{ Str::startsWith($activeMenu, 'dashboard') ? 'active' : '' }}">
@@ -625,6 +642,7 @@
                 <span>Ver Tienda</span>
             </a>
         </li>
+        @endif
     </ul>
 
     <div class="sidebar-footer">
@@ -654,7 +672,7 @@
             <div class="subtitle">@yield('page-subtitle')</div>
         </div>
         <div style="display:flex;align-items:center;gap:.8rem;">
-            @if($conteoStockBajo > 0)
+            @if($conteoStockBajo > 0 && Auth::user()->rol !== 'cliente')
             <a href="{{ route('inventario.index') }}" class="header-stock-alert" title="Ver {{ $conteoStockBajo }} productos con stock bajo">
                 <span>⚠️</span>
                 <span><b>{{ $conteoStockBajo }}</b> Stock Bajo</span>
@@ -688,8 +706,8 @@
         </div>
         @endif
 
-        {{-- Alerta Global de Stock Bajo si hay productos críticos (visible en módulos fuera de inventario) --}}
-        @if($conteoStockBajo > 0 && !request()->routeIs('inventario.index'))
+        {{-- Alerta Global de Stock Bajo si hay productos críticos (solo para administrador y empleado) --}}
+        @if($conteoStockBajo > 0 && !request()->routeIs('inventario.index') && Auth::user()->rol !== 'cliente')
         <div class="stock-banner-alert" id="stockAlertBanner">
             <div class="sba-left">
                 <div class="sba-icon-bubble">⚠️</div>

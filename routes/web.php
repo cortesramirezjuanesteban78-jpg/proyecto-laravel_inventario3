@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Route;
 
 // ─── Página principal ──────────────────────────────────────────────────────
 Route::get('/', function () {
-    return view('index');
+    $productos = \App\Models\Producto::with('categoria')->orderBy('id_producto', 'desc')->get();
+    $categorias = \App\Models\Categoria::withCount('productos')->get();
+    return view('index', compact('productos', 'categorias'));
 })->name('index');
 
 // ─── Autenticación ─────────────────────────────────────────────────────────
@@ -38,6 +40,7 @@ Route::middleware('auth')->group(function () {
     // Usuarios
     Route::resource('usuarios', UsuarioController::class)->except(['show']);
     Route::post('usuarios/{id}/toggle-estado', [UsuarioController::class, 'toggleEstado'])->name('usuarios.toggle');
+    Route::post('usuarios/{id}/cambiar-rol',   [UsuarioController::class, 'cambiarRol'])->name('usuarios.cambiarRol');
 
     // Categorías
     Route::get('categorias',        [CategoriaController::class, 'index'])->name('categorias.index');
@@ -46,6 +49,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('categorias/{id}',[CategoriaController::class, 'destroy'])->name('categorias.destroy');
 
     // Ventas
+    Route::get('ventas/{id}/factura',     [VentaController::class, 'factura'])->name('ventas.factura');
+    Route::get('ventas/{id}/factura/pdf', [VentaController::class, 'facturaPdf'])->name('ventas.factura.pdf');
     Route::resource('ventas', VentaController::class)->except(['show', 'edit', 'update']);
 
     // Proveedores

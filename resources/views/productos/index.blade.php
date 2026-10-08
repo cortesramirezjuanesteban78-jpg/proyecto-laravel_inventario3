@@ -1,11 +1,13 @@
 @extends('layouts.sidebar')
 
-@section('title', 'Productos')
-@section('page-title', 'Productos')
-@section('page-subtitle', $total . ' productos en catálogo')
+@section('title', Auth::user()->rol === 'cliente' ? 'Catálogo de Productos' : 'Productos')
+@section('page-title', Auth::user()->rol === 'cliente' ? 'Catálogo de Productos' : 'Productos')
+@section('page-subtitle', Auth::user()->rol === 'cliente' ? 'Explora nuestros productos frescos disponibles' : $total . ' productos en catálogo')
 
 @section('page-action')
+@if(Auth::user()->rol !== 'cliente')
 <button onclick="openModal('modal-create')" class="btn-primary">+ Nuevo Producto</button>
+@endif
 @endsection
 
 @push('styles')
@@ -146,6 +148,18 @@
 
 @section('content')
 
+@if(Auth::user()->rol === 'cliente')
+<div style="background: linear-gradient(135deg, #042217 0%, #0b4e37 100%); border-radius: 18px; padding: 1.4rem 1.8rem; margin-bottom: 2rem; color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 1rem; box-shadow: var(--shadow-md);">
+    <div>
+        <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.3rem;">🌿 Catálogo de Productos Frescos</h2>
+        <p style="color: #a7f3d0; font-size: 0.88rem;">Consulta los productos disponibles en nuestro supermercado con existencias y precios en tiempo real.</p>
+    </div>
+    <div style="text-align: right; flex-shrink: 0;">
+        <span style="font-size: 2.2rem; font-weight: 900; font-family: 'Outfit', sans-serif; color: #6ee7b7; line-height: 1;">{{ $productos->total() }}</span>
+        <div style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: #d1fae5; margin-top: 0.2rem;">Productos</div>
+    </div>
+</div>
+@else
 {{-- Stats --}}
 <div class="stats-row">
     <div class="stat-card green">
@@ -165,15 +179,18 @@
         <div><div class="sc-num">{{ $agotados }}</div><div class="sc-label">Agotados</div></div>
     </div>
 </div>
+@endif
 
 {{-- Filters --}}
 <form method="GET" action="{{ route('productos.index') }}" class="filters-row">
     <input type="text" name="search" placeholder="🔍 Buscar producto..." value="{{ request('search') }}">
+    @if(Auth::user()->rol !== 'cliente')
     <select name="estado" onchange="this.form.submit()">
         <option value="">Todos los estados</option>
         <option value="1" {{ request('estado') === '1' ? 'selected' : '' }}>Activos</option>
         <option value="0" {{ request('estado') === '0' ? 'selected' : '' }}>Inactivos</option>
     </select>
+    @endif
     <select name="categoria" onchange="this.form.submit()">
         <option value="">Todas las categorías</option>
         @foreach($categorias as $cat)
@@ -225,6 +242,7 @@
                     <div class="stock-fill {{ $stockClass }}" style="width: {{ $stockPct }}%"></div>
                 </div>
             </div>
+            @if(Auth::user()->rol !== 'cliente')
             <div class="pc-actions">
                 <button class="btn-edit-sm" onclick="openEditModal(
                     {{ $p->id_producto }},
@@ -251,6 +269,14 @@
                     <button type="submit" class="btn-icon red" title="Eliminar">🗑️</button>
                 </form>
             </div>
+            @else
+            <div style="margin-top:0.85rem;">
+                <a href="{{ route('index') }}#ofertas" target="_blank" style="width:100%; text-align:center; padding:0.5rem; background:#ecfdf5; color:#065f46; border:1.5px solid #a7f3d0; border-radius:10px; font-weight:700; font-size:0.84rem; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:0.4rem; transition: all 0.2s;">
+                    <span>🛒</span>
+                    <span>Comprar en Tienda</span>
+                </a>
+            </div>
+            @endif
         </div>
     </div>
     @endforeach
@@ -265,6 +291,7 @@
 </div>
 @endif
 
+@if(Auth::user()->rol !== 'cliente')
 {{-- Create Modal --}}
 <div class="modal-overlay" id="modal-create">
     <div class="modal-box">
@@ -460,6 +487,7 @@
         </form>
     </div>
 </div>
+@endif
 
 @endsection
 

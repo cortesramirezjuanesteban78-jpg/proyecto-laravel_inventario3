@@ -169,6 +169,29 @@
     .login-link a { color: #106f4e; font-weight: 700; text-decoration: none; }
     .login-link a:hover { text-decoration: underline; color: #042217; }
 
+    .role-info-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        background: #f0fdf4;
+        border: 1.5px solid #bbf7d0;
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 1.4rem;
+        font-size: 0.84rem;
+        color: #166534;
+        line-height: 1.5;
+    }
+    .role-info-alert .ria-icon {
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .role-info-alert strong {
+        color: #14532d;
+        font-weight: 700;
+    }
+
     @media (max-width: 900px) {
         .auth-page { flex-direction: column; }
         .auth-visual { padding: 3rem 1.5rem; }
@@ -207,9 +230,16 @@
         <div class="auth-form-inner">
 
             <div class="form-header">
-                <div class="step-tag">✨ Registro Gratuito</div>
+                <div class="step-tag">✨ Registro de Cliente</div>
                 <h1>Crear Cuenta</h1>
                 <p>Completa tus datos para comenzar tu experiencia en SuperFresco</p>
+            </div>
+
+            <div class="role-info-alert">
+                <span class="ria-icon">🛒</span>
+                <div>
+                    <strong>Perfil de Cliente:</strong> Todo nuevo registro crea una cuenta con acceso de <strong>Cliente</strong>. Si eres parte del personal operativo, el <strong>Administrador</strong> te asignará el rol de <strong>Empleado</strong> desde su panel de gestión.
+                </div>
             </div>
 
             <form action="{{ route('register') }}" method="POST" novalidate>

@@ -46,7 +46,8 @@ El sistema cuenta con tres niveles de acceso claramente definidos mediante contr
 ### 2.2 Registro de Nuevos Clientes
 1. Dirígete a `http://127.0.0.1:8000/register` o haz clic en *"¿No tienes cuenta? Regístrate aquí"* desde el formulario de login.
 2. Diligencia tus nombres, apellidos, correo, teléfono y contraseña (mínimo 6 caracteres).
-3. Haz clic en **"Crear Cuenta"**. Automáticamente se te asignará el rol de cliente y se iniciará tu sesión de forma segura.
+3. Haz clic en **"Crear Cuenta"**. Automáticamente se te asignará el rol de **Cliente** y se iniciará tu sesión de forma segura.
+4. **Política de Roles:** Todo nuevo usuario registrado inicia exclusivamente como **Cliente**. Únicamente el **Administrador** del sistema puede decidir y asignarle el rol de **Empleado** desde el panel interno de gestión.
 
 ---
 
@@ -151,13 +152,18 @@ Directorio de empresas y aliados comerciales que surten la tienda:
 
 ---
 
-## 9. Gestión de Usuarios y Cuentas
+## 9. Gestión de Usuarios y Roles
 
 Ruta: `/usuarios` *(Solo Administrador)*.
 
-* **Listado de Cuentas:** Permite filtrar y buscar usuarios por nombre o correo.
-* **Creación de Cuentas Internas:** Crear perfiles con rol de *Empleado* o *Administrador*.
-* **Cambio de Contraseña y Datos:** Permite actualizar nombres, teléfonos y reasignar roles.
+* **Control Centralizado de Roles:** El Administrador es la única persona autorizada para gestionar y cambiar los roles del sistema.
+* **Asignación Rápida de Rol de Empleado:**
+  - Cuando una persona se registra en la tienda web, ingresa automáticamente como **Cliente**.
+  - El Administrador puede ingresar a `/usuarios`, revisar los clientes registrados y pulsar **"💼 Hacer Empleado"** para otorgarle acceso operativo inmediatamente al inventario y catálogo.
+  - De igual forma, si un empleado finaliza labores, el Administrador puede presionar **"🧑‍💼 Pasar a Cliente"** para revocar sus permisos operativos sin eliminar sus registros históricos.
+* **Filtros por Perfil:** Pestañas directas para visualizar Todos, Clientes, Empleados o Administradores, junto con métricas en tiempo real.
+* **Creación de Cuentas Internas:** Crear perfiles directamente con rol de *Empleado*, *Cliente* o *Administrador*.
+* **Cambio de Contraseña y Datos:** Permite actualizar nombres, teléfonos, correos y contraseñas.
 * **Activación y Bloqueo:** El botón de alternar estado permite revocar el acceso a empleados que ya no laboren en la empresa sin eliminar sus registros históricos.
 
 ---

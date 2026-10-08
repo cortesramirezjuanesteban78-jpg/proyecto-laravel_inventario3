@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class VentaController extends Controller
 {
     public function index()
@@ -25,9 +27,26 @@ class VentaController extends Controller
         $ingresosHoy   = Venta::whereDate('fecha_venta', today())->sum('total');
         $totalIngresos = Venta::sum('total');
 
-        // Datos para el modal de nueva venta
+        // Sincronizar automáticamente todos los usuarios con rol 'cliente' en la tabla de clientes
+        $usuariosClientes = Usuario::where('rol', 'cliente')->get();
+        foreach ($usuariosClientes as $uc) {
+            \App\Models\Cliente::updateOrCreate(
+                ['correo' => $uc->email],
+                [
+                    'nombre'    => trim($uc->nombres . ' ' . $uc->apellidos),
+                    'telefono'  => $uc->telefono,
+                    'documento' => 'CLI-' . str_pad($uc->id_usuario, 4, '0', STR_PAD_LEFT),
+                ]
+            );
+        }
+
+        // Datos para el modal de nueva venta (artículos disponibles y clientes del sistema)
         $productos = Producto::where('estado', 1)->where('stock_actual', '>', 0)->orderBy('nombre')->get();
-        $clientes  = \App\Models\Cliente::orderBy('nombre')->get();
+        $correosClientes = $usuariosClientes->pluck('email')->filter();
+        $clientes  = \App\Models\Cliente::whereIn('correo', $correosClientes)
+            ->orWhereNull('correo')
+            ->orderBy('nombre')
+            ->get();
 
         return view('ventas.index', compact(
             'ventas', 'totalVentas', 'ventasHoy', 'ingresosHoy', 'totalIngresos',
@@ -37,15 +56,12 @@ class VentaController extends Controller
 
     public function create()
     {
-        $productos = Producto::where('estado', 1)->where('stock_actual', '>', 0)
-            ->orderBy('nombre')->get();
-        $clientes  = Usuario::where('rol', 'cliente')->orderBy('nombres')->get();
-
-        return view('ventas.create', compact('productos', 'clientes'));
+        return redirect()->route('ventas.index');
     }
 
     public function store(Request $r)
     {
+        abort_if(auth()->user()->rol !== 'administrador', 403);
         $r->validate([
             'metodo_pago'        => 'required|in:efectivo,tarjeta,transferencia',
             'estado'             => 'required|in:pendiente,completada,cancelada',
@@ -117,8 +133,15 @@ class VentaController extends Controller
 
             DB::commit();
 
-            $response = redirect()->route('ventas.index')
-                ->with('success', 'Venta #' . $venta->id_venta . ' registrada correctamente. Total: $' . number_format($total, 2));
+            // Si el cajero seleccionó generar/abrir factura inmediatamente
+            if ($r->boolean('imprimir_factura', true)) {
+                $response = redirect()->route('ventas.factura', $venta->id_venta)
+                    ->with('success', '¡Venta #' . $venta->id_venta . ' registrada correctamente! Total: $' . number_format($total, 2));
+            } else {
+                $response = redirect()->route('ventas.index')
+                    ->with('success', 'Venta #' . $venta->id_venta . ' registrada correctamente. Total: $' . number_format($total, 2))
+                    ->with('venta_creada_id', $venta->id_venta);
+            }
 
             if (!empty($productosConAlerta)) {
                 $response->with('warning', '⚠️ <strong>¡Alerta de Stock Crítico!</strong> Tras esta venta, se requiere reabastecimiento para: ' . implode(', ', $productosConAlerta));
@@ -132,8 +155,35 @@ class VentaController extends Controller
         }
     }
 
+    /**
+     * Muestra la factura de venta en formato web interactivo e imprimible.
+     */
+    public function factura($id)
+    {
+        $venta = Venta::with(['usuario', 'cliente', 'detalles.producto.categoria'])
+            ->findOrFail($id);
+
+        return view('ventas.factura', compact('venta'));
+    }
+
+    /**
+     * Genera y descarga la factura en formato PDF (DomPDF).
+     */
+    public function facturaPdf($id)
+    {
+        $venta = Venta::with(['usuario', 'cliente', 'detalles.producto.categoria'])
+            ->findOrFail($id);
+
+        $pdf = Pdf::loadView('ventas.factura_pdf', compact('venta'))
+            ->setPaper('a4', 'portrait')
+            ->setOption(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
+
+        return $pdf->download("factura_superfresco_{$venta->id_venta}.pdf");
+    }
+
     public function destroy($id)
     {
+        abort_if(auth()->user()->rol !== 'administrador', 403);
         Venta::findOrFail($id)->delete();
 
         return redirect()->route('ventas.index')

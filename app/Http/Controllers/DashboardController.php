@@ -11,6 +11,10 @@ class DashboardController extends Controller
     {
         $rol = Auth::user()->rol;
 
+        if ($rol === 'cliente') {
+            return redirect()->route('productos.index');
+        }
+
         if ($rol === 'administrador') {
             $stats = [
                 'usuarios'    => DB::table('usuarios')->where('estado', 1)->count(),
